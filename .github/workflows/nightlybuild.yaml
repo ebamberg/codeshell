@@ -5,11 +5,11 @@ name: nightlybuild
 on:
   push:
     branches:
-    - master
+    - main
     - develop
   pull_request:
     branches:
-    - master
+    - main
     - develop
 
 jobs:
@@ -47,7 +47,7 @@ jobs:
       with:
         name: codeshell.exe
         path: dist    
-        
+
 
   # The "deploy" workflow
 #  deploy:
