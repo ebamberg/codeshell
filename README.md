@@ -1,2 +1,2 @@
 # codeshell
-Codeshell
+Codeshell - useful environment for developers
