@@ -55,8 +55,7 @@ jobs:
     steps: 
         - uses: actions/download-artifact@v4
           with:
-            path: build
-     #   - run: zip -r build.zip build/
+            path: dist
         - uses: ncipollo/release-action@v1
           with:
             artifacts: "codeshell.zip"
