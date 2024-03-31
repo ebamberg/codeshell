@@ -60,8 +60,10 @@ jobs:
           with:
             artifacts: "codeshell.zip"
             name: codeshell-latest.zip
+            allowUpdates: true
             prerelease: true
             tag: latest-build
+            
 
 
   # The "deploy" workflow
