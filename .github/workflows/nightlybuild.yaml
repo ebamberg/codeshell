@@ -62,6 +62,7 @@ jobs:
           with:
             name: codeshell-latest.zip
             allowUpdates: true
+            replacesArtifacts: true
             prerelease: true
             tag: latest-build
             
