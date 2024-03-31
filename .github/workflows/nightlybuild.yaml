@@ -28,25 +28,39 @@ jobs:
       uses: actions/setup-go@v4
       with:
         go-version: '1.21.5' # The Go version to download (if necessary) and use.
-    
-    # Install all the dependencies
-   # - name: Install dependencies
-   #   run: |
-   #     go version
-   #     go get -u golang.org/x/lint/golint
         
     # Run build of the application
-    - name: Run build
-      run: cd app && go build -o ../dist/codeshell.exe main.go 
+    - name: Run build windows
+      run: cd app && GOOS=windows GOARCH=amd64 go build -o ../dist/codeshell-win64.exe main.go 
+    - name: Run build linux
+      run: cd app && GOOS=linux GOARCH=amd64 go build -o ../dist/codeshell-linux64 main.go 
     
     # Run testing on the code
     - name: Run testing
       run: cd app && go test -v ./...
 
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v4
       with:
-        name: codeshell.exe
-        path: dist    
+        name: codeshell
+        path: dist/    
+        retention-days: 7
+
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+        
+    needs: build
+
+    steps: 
+        - uses: actions/download-artifact@v4
+          with:
+            path: build
+        - run: zip -r build.zip build/
+        - uses: ncipollo/release-action@v4
+          with:
+            artifacts: "codeshell.zip"
+            name: codeshell-nightly.zip
 
 
   # The "deploy" workflow
