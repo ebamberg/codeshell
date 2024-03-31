@@ -56,11 +56,11 @@ jobs:
         - uses: actions/download-artifact@v4
           with:
             path: build
-        - run: zip -r build.zip build/
-        - uses: ncipollo/release-action@v4
+     #   - run: zip -r build.zip build/
+        - uses: ncipollo/release-action@v1
           with:
             artifacts: "codeshell.zip"
-            name: codeshell-nightly.zip
+            name: codeshell-latest.zip
 
 
   # The "deploy" workflow
