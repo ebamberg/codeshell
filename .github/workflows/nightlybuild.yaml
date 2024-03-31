@@ -57,10 +57,9 @@ jobs:
         - uses: actions/download-artifact@v4
           with:
             path: artifact
-            pattern: codeshell-latest*
+            pattern: codeshell*
         - uses: ncipollo/release-action@v1
           with:
-            artifacts: codeshell-latest
             name: codeshell-latest.zip
             allowUpdates: true
             prerelease: true
