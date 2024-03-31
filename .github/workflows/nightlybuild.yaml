@@ -41,9 +41,10 @@ jobs:
 
     - uses: actions/upload-artifact@v4
       with:
-        name: codeshell
+        name: codeshell-latest
         path: dist/    
         retention-days: 7
+        overwrite: true
 
   release:
     runs-on: ubuntu-latest
@@ -55,10 +56,11 @@ jobs:
     steps: 
         - uses: actions/download-artifact@v4
           with:
-            path: dist
+            path: artifact
+            pattern: codeshell-latest*
         - uses: ncipollo/release-action@v1
           with:
-            artifacts: "codeshell.zip"
+            artifacts: codeshell-latest
             name: codeshell-latest.zip
             allowUpdates: true
             prerelease: true
