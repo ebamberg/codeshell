@@ -74,7 +74,7 @@ jobs:
           with:          
             upload_url: ${{ steps.create_release.outputs.upload_url }} 
             asset_path: artifact/codeshell-latest/       
-            asset_name: codeshell-win64.exe
+            asset_name: codeshell-latest.zip
             asset_content_type: application/zip
 
 
