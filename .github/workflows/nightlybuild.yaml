@@ -62,7 +62,7 @@ jobs:
           id: create_release
           uses: ncipollo/release-action@v1
           with:
-            name: codeshell-latest.zip
+            name: codeshell-latest-dev-build
             allowUpdates: true
             replacesArtifacts: true
             prerelease: true
