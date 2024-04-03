@@ -58,14 +58,25 @@ jobs:
           with:
             path: artifact
             pattern: codeshell*
-        - uses: ncipollo/release-action@v1
+        - name: Create Release
+          id: create_release
+          uses: ncipollo/release-action@v1
           with:
             name: codeshell-latest.zip
             allowUpdates: true
             replacesArtifacts: true
             prerelease: true
             tag: latest-build
-            
+        - name: Upload assets        
+          uses: actions/upload-release-asset@v1        
+          env:          
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}        
+          with:          
+            upload_url: ${{ steps.create_release.outputs.upload_url }} 
+            asset_path: ./codeshell-latest.zip          
+            asset_name: codeshell.${{ github.ref }}.zip
+            asset_content_type: application/zip
+
 
 
   # The "deploy" workflow
