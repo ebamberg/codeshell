@@ -73,8 +73,8 @@ jobs:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}        
           with:          
             upload_url: ${{ steps.create_release.outputs.upload_url }} 
-            asset_path: codeshell-latest.zip          
-            asset_name: codeshell.${{ github.ref }}.zip
+            asset_path: artifact/codeshell-latest/       
+            asset_name: codeshell-win64.exe
             asset_content_type: application/zip
 
 
