@@ -22,9 +22,9 @@ func TestGetAllProfiles(t *testing.T) {
 	assert.NotNil(t, profiles)
 	assert.Equal(t, 2, len(profiles))
 	assert.Equal(t, "test profile", profiles["test1"].Displayname)
-	assert.Equal(t, "def", profiles["test1"].Applications)
+	assert.Equal(t, []string([]string{"java", "maven"}), profiles["test1"].Applications)
 
-	assert.Equal(t, "ghi", profiles["test2"].Applications)
+	assert.Equal(t, []string([]string{"ghi"}), profiles["test2"].Applications)
 
 }
 
