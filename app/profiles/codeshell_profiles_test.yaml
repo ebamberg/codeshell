@@ -1,3 +1,12 @@
+local:
+  paths:
+    applications: ./apps/
+
+modules:
+  applications: 
+    file-provider:
+      path: ./apps/
+
 profiles:
   test1:
     displayname: "test profile"
@@ -5,6 +14,8 @@ profiles:
         TEST_CS_STRING: "hello world!"
         TEST_CS_2: "foobar"
         TEST_CS_3: "123"
-    applications: def
+    applications: 
+      - java
+      - maven
   test2:
     applications: ghi

@@ -15,3 +15,8 @@ func TestInitWithParameters(t *testing.T) {
 func TestInitNoParameters(t *testing.T) {
 	Init()
 }
+
+func TestDefaultConfiguration(t *testing.T) {
+	Init("codeshell_config_test.yaml")
+	assert.Equal(t, viper.GetString("local.paths.applications"), "./apps/")
+}
