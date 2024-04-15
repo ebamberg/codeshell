@@ -62,3 +62,7 @@ func Init(configLocations ...string) {
 func GetString(param string) string {
 	return viper.GetString(param)
 }
+
+func Set(path string, value any) {
+	viper.Set(path, value)
+}

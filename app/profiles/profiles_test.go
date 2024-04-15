@@ -148,7 +148,7 @@ func Test_GetAllProfiles_application_list(t *testing.T) {
 func Test_ActivateApps(t *testing.T) {
 	config.Init("codeshell_profiles_test.yaml")
 	resetEnvPath()
-	activateApps([]string{"java", "maven"})
+	ActivateApps([]string{"java", "maven"})
 	path := config.GetString("Path")
 	assert.True(t, strings.Contains(path, filepath.Join("apps", "java", "bin")))
 	assert.True(t, strings.Contains(path, filepath.Join("apps", "maven", "bin")))

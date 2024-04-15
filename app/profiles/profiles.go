@@ -1,11 +1,10 @@
 package profiles
 
 import (
-	"codeshell/config"
+	"codeshell/applications"
 	"fmt"
 	"log"
 	"os"
-	"path/filepath"
 	"strings"
 
 	"github.com/spf13/viper"
@@ -50,7 +49,7 @@ func ActivateProfile(id string) error {
 				log.Printf("set env variable %s = %s", strings.ToUpper(envVar), value)
 				setEnvVariable(envVar, value)
 			}
-			activateApps(profile.Applications)
+			ActivateApps(profile.Applications)
 			return nil
 		} else {
 			return fmt.Errorf("profile [%s] not found", id)
@@ -58,17 +57,6 @@ func ActivateProfile(id string) error {
 	} else {
 		return err
 	}
-}
-
-func activateApps(appList []string) {
-	fmt.Println("activating applications...")
-	appsPath := config.GetString("local.paths.applications")
-	for _, app := range appList {
-		path := filepath.Join(appsPath, app, "bin")
-		fmt.Printf("\t%s\t\t%s\n", app, path)
-		appendEnvPath(path)
-	}
-
 }
 
 /*
@@ -103,4 +91,21 @@ func resetEnvPath() {
 	if originalPath != "" {
 		os.Setenv("PATH", originalPath)
 	}
+}
+
+func ActivateApps(appList []string) {
+	fmt.Println("activating applications...")
+
+	installed := applications.ListInstalledAppications()
+	for _, appKey := range appList {
+		if app, ok := installed[appKey]; ok {
+
+			appendEnvPath(app.BinaryPath)
+			fmt.Printf("activated : \t%s\t\t%s\n", app.DisplayName, app.Path)
+
+		} else {
+			fmt.Printf("app %s is not installed. skipped activation.\n", appKey)
+		}
+	}
+
 }
