@@ -41,6 +41,10 @@ func SetEnvVariable(envVar string, value string) {
 	os.Setenv(envVar, value)
 }
 
+func GetEnvVariable(envVar string) string {
+	return os.Getenv(envVar)
+}
+
 func AppendEnvPath(path string) {
 	SetEnvVariable("PATH", path)
 }

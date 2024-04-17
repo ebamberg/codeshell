@@ -2,6 +2,7 @@ package applications
 
 import (
 	"codeshell/config"
+	"codeshell/utils"
 	"os"
 	"path/filepath"
 	"strings"
@@ -46,18 +47,50 @@ func TestListInstalledAppications_have_correct_bin_folder(t *testing.T) {
 	assert.True(t, strings.HasSuffix(applicationsfound["test2"].BinaryPath, "test2"))
 }
 
-func TestListInstalledAppications_have_status_installed(t *testing.T) {
+func TestActivateApp(t *testing.T) {
 
 	appsdir := setupTestAppFolder()
 	defer teardownTestAppFolder(appsdir)
 
 	applicationsfound := ListInstalledAppications()
+	applicationsfound["test1"].Activate()
 
-	assert.Equal(t, Installed, applicationsfound["test1"].Status)
-	assert.Equal(t, Installed, applicationsfound["test2"].Status)
+	assert.Contains(t, strings.Split(utils.GetEnvVariable(ENV_KEY_ACTIVACTED), ","), "test1")
 }
 
-func TestAppicationsStatus(t *testing.T) {
+func TestActivateApp_twice_doesnt_add_app_twice(t *testing.T) {
+
+	appsdir := setupTestAppFolder()
+	defer teardownTestAppFolder(appsdir)
+
+	applicationsfound := ListInstalledAppications()
+	applicationsfound["test1"].Activate()
+	applicationsfound["test1"].Activate()
+	ac := strings.Split(utils.GetEnvVariable(ENV_KEY_ACTIVACTED), ",")
+	var count int
+	for _, a := range ac {
+		if a == "test1" {
+			count++
+		}
+	}
+	assert.Equal(t, 1, count)
+}
+
+func TestListInstalledApplications_have_correct_status(t *testing.T) {
+
+	appsdir := setupTestAppFolder()
+	defer teardownTestAppFolder(appsdir)
+
+	origActivated := utils.GetEnvVariable(ENV_KEY_ACTIVACTED)
+	utils.SetEnvVariable(ENV_KEY_ACTIVACTED, "test2,test3")
+	defer utils.SetEnvVariable(ENV_KEY_ACTIVACTED, origActivated)
+	applicationsfound := ListInstalledAppications()
+
+	assert.Equal(t, Installed, applicationsfound["test1"].Status)
+	assert.Equal(t, Activated, applicationsfound["test2"].Status)
+}
+
+func TestApplicationsStatus(t *testing.T) {
 	assert.Equal(t, "Available", Available.String())
 	assert.Equal(t, "Installed", Installed.String())
 	assert.Equal(t, "Activated", Activated.String())
