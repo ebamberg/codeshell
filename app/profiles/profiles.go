@@ -2,9 +2,9 @@ package profiles
 
 import (
 	"codeshell/applications"
+	"codeshell/utils"
 	"fmt"
 	"log"
-	"os"
 	"strings"
 
 	"github.com/spf13/viper"
@@ -44,10 +44,10 @@ func ActivateProfile(id string) error {
 	profile, err := GetProfile(id)
 	if err == nil {
 		if profile != nil {
-			resetEnvPath()
+			utils.ResetEnvPath()
 			for envVar, value := range profile.EnvVars {
 				log.Printf("set env variable %s = %s", strings.ToUpper(envVar), value)
-				setEnvVariable(envVar, value)
+				utils.SetEnvVariable(envVar, value)
 			}
 			ActivateApps(profile.Applications)
 			return nil
@@ -59,50 +59,13 @@ func ActivateProfile(id string) error {
 	}
 }
 
-/*
-sets an env variable and take care of special cases
-PATH variable is not overridden but get prepended as suffix to the  Path
-when setting the PATH for the first time the original state is stored in
-a env var. resetEnvPath can be used afterward to reset to that state
-*/
-func setEnvVariable(envVar string, value string) {
-	envVar = strings.ToUpper(envVar)
-	if envVar == "PATH" {
-		current := os.Getenv("PATH")
-		originalPath := os.Getenv("CODESHELL_ORIGINAL_PATH")
-		if originalPath == "" {
-			os.Setenv("CODESHELL_ORIGINAL_PATH", current)
-		}
-		value = value + string(os.PathListSeparator) + current
-	}
-	os.Setenv(envVar, value)
-}
-
-func appendEnvPath(path string) {
-	setEnvVariable("PATH", path)
-}
-
-/*
-resets the envvariable PATH to the original state
-before it has been modified by CODESHELL
-*/
-func resetEnvPath() {
-	originalPath := os.Getenv("CODESHELL_ORIGINAL_PATH")
-	if originalPath != "" {
-		os.Setenv("PATH", originalPath)
-	}
-}
-
 func ActivateApps(appList []string) {
 	fmt.Println("activating applications...")
 
 	installed := applications.ListInstalledAppications()
 	for _, appKey := range appList {
 		if app, ok := installed[appKey]; ok {
-
-			appendEnvPath(app.BinaryPath)
-			fmt.Printf("activated : \t%s\t\t%s\n", app.DisplayName, app.Path)
-
+			app.Activate()
 		} else {
 			fmt.Printf("app %s is not installed. skipped activation.\n", appKey)
 		}

@@ -2,6 +2,7 @@ package profiles
 
 import (
 	"codeshell/config"
+	"codeshell/utils"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -99,39 +100,6 @@ func TestActivateProfile_not_found(t *testing.T) {
 
 }
 
-func TestSetEnvVariableWithPathVariable(t *testing.T) {
-	var testPath = "test/bin/"
-	setEnvVariable("path", testPath)
-	var newPath = os.Getenv("PATH")
-	assert.True(t, strings.HasPrefix(newPath, testPath) && len(newPath) > len(testPath))
-	os.Setenv("CODESHELL_ORIGINAL_PATH", "")
-}
-
-func TestAppendPathVariable(t *testing.T) {
-	var testPath = "test/bin/"
-	appendEnvPath(testPath)
-	var newPath = os.Getenv("PATH")
-	assert.True(t, strings.HasPrefix(newPath, testPath) && len(newPath) > len(testPath))
-	os.Setenv("CODESHELL_ORIGINAL_PATH", "")
-}
-
-func TestResetEnvPath(t *testing.T) {
-	originalPath := os.Getenv("PATH")
-	var testPath = "test/bin/"
-	setEnvVariable("path", testPath)
-	resetEnvPath()
-	var newPath = os.Getenv("PATH")
-	assert.Equal(t, originalPath, newPath)
-}
-
-func TestResetEnvPathBeforeOriginalPathIsSet(t *testing.T) {
-	originalPath := os.Getenv("PATH")
-	os.Setenv("CODESHELL_ORIGINAL_PATH", "")
-	resetEnvPath()
-	var newPath = os.Getenv("PATH")
-	assert.Equal(t, originalPath, newPath)
-}
-
 func Test_GetAllProfiles_application_list(t *testing.T) {
 
 	config.Init("codeshell_profiles_test.yaml")
@@ -167,7 +135,7 @@ func Test_ActivateApps(t *testing.T) {
 	testAppFolder := setupTestAppFolder()
 	defer teardownTestAppFolder(testAppFolder)
 
-	resetEnvPath()
+	utils.ResetEnvPath()
 	ActivateApps([]string{"java", "maven"})
 	path := config.GetString("Path")
 	assert.True(t, strings.Contains(path, filepath.Join(testAppFolder, "java", "bin")))

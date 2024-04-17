@@ -27,18 +27,24 @@ func (s Status) String() string {
 	return statuses[s-1]
 }
 
-type Application struct {
+type application struct {
 	DisplayName string
 	Path        string
 	BinaryPath  string
 	Status      Status
 }
 
-func ListInstalledAppications() map[string]Application {
+func (this application) Activate() {
+	utils.AppendEnvPath(this.BinaryPath)
+	fmt.Printf("activated : \t%s\t\t%s\n", this.DisplayName, this.Path)
+
+}
+
+func ListInstalledAppications() map[string]application {
 	appspath := config.GetString(CONFIG_KEY_APP_PATH)
 	entries, err := os.ReadDir(appspath)
 	if err == nil {
-		result := make(map[string]Application)
+		result := make(map[string]application)
 		for _, e := range entries {
 			if e.IsDir() {
 				fmt.Println(e.Name())
@@ -46,7 +52,7 @@ func ListInstalledAppications() map[string]Application {
 				app_path := filepath.Join(appspath, app_name)
 				bin_path := findBinaryPath(app_path)
 
-				result[app_name] = Application{app_name, app_path, bin_path, Installed}
+				result[app_name] = application{app_name, app_path, bin_path, Installed}
 			}
 		}
 		return result
