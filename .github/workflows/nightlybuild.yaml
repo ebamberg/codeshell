@@ -39,22 +39,22 @@ jobs:
     - name: Run testing
       run: cd app && go test -v ./...
 
-    - name: release
-      uses: actions/create-release@v1
-      id: create_release
-      with:
-        draft: false
-        prerelease: false
-        release_name: codeshell-latest-dev-build-${{ github.ref }}
-        tag_name: ${{ github.ref }}
-      env:
-        GITHUB_TOKEN: ${{ github.token }}
-    - name: upload windows artifact
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ github.token }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./dist/codeshell-win64.exe
-        asset_name: codeshell.windows-amd64.zip
-        asset_content_type: application/zip
+#    - name: release
+#      uses: actions/create-release@v1
+#      id: create_release
+#      with:
+#        draft: false
+#        prerelease: false
+#        release_name: codeshell-latest-dev-build-${{ github.ref }}
+#        tag_name: ${{ github.ref }}
+#      env:
+#        GITHUB_TOKEN: ${{ github.token }}
+#    - name: upload windows artifact
+#      uses: actions/upload-release-asset@v1
+#      env:
+ #       GITHUB_TOKEN: ${{ github.token }}
+ #     with:
+ #       upload_url: ${{ steps.create_release.outputs.upload_url }}
+ #       asset_path: ./dist/codeshell-win64.exe
+ #       asset_name: codeshell.windows-amd64.zip
+ #       asset_content_type: application/zip
