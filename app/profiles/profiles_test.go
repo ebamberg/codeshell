@@ -69,11 +69,8 @@ func Test_GetAllProfiles_envVars_list(t *testing.T) {
 func TestGetProfile(t *testing.T) {
 
 	config.Init("codeshell_profiles_test.yaml")
-	profile, err := GetProfile("test1")
-	if err != nil {
-		t.Log(err)
-	}
-	assert.Nil(t, err)
+	profile, exists := GetProfile("test1")
+	assert.True(t, exists)
 	assert.NotNil(t, profile)
 	assert.Equal(t, "test profile", profile.Displayname)
 
@@ -82,11 +79,8 @@ func TestGetProfile(t *testing.T) {
 func TestActivateProfile(t *testing.T) {
 
 	config.Init("codeshell_profiles_test.yaml")
-	err := ActivateProfile("test1")
-	if err != nil {
-		t.Log(err)
-	}
-	assert.Nil(t, err)
+	activated := ActivateProfile("test1")
+	assert.True(t, activated)
 	assert.Equal(t, "hello world!", os.Getenv("TEST_CS_STRING"))
 
 }
@@ -94,9 +88,9 @@ func TestActivateProfile(t *testing.T) {
 func TestActivateProfile_not_found(t *testing.T) {
 
 	config.Init("codeshell_profiles_test.yaml")
-	err := ActivateProfile("gacklooma")
+	activated := ActivateProfile("gacklooma")
 
-	assert.NotErrorIs(t, err, fmt.Errorf("profile [gacklooma] not found"))
+	assert.False(t, activated, fmt.Errorf("profile [gacklooma] not found"))
 
 }
 

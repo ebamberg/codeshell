@@ -4,23 +4,33 @@ Copyright © 2024 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"codeshell/applications"
+	"codeshell/output"
 	"fmt"
 
 	"github.com/spf13/cobra"
 )
 
 // listCmd represents the list command
-var listCmd = &cobra.Command{
+var appsListCmd = &cobra.Command{
 	Use:   "list",
-	Short: "list all profiles",
-	Long:  `list all defined profiles.`,
+	Short: "list all applications",
+	Long:  `list all applications.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("list called")
+		installed := applications.ListInstalledAppications()
+		if len(installed) > 0 {
+			output.PrintAsTable(installed, func(row any) []string {
+				app := row.(applications.Application)
+				return []string{app.DisplayName, app.Status.String()}
+			})
+		} else {
+			fmt.Printf("no applications found.")
+		}
 	},
 }
 
 func init() {
-	profilesCmd.AddCommand(listCmd)
+	appsCmd.AddCommand(appsListCmd)
 
 	// Here you will define your flags and configuration settings.
 

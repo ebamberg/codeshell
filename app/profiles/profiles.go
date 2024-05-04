@@ -18,19 +18,29 @@ type Profile struct {
 	Applications []string          `mapstructure:"applications"`
 }
 
-func getAllProfiles() (map[string]*Profile, error) {
-	var profiles = make(map[string]*Profile)
-	viper.UnmarshalKey(CONFIG_KEY_PROFILES, &profiles)
-	return profiles, nil
+func getAllProfiles() (map[string]Profile, error) {
+	var profiles = make(map[string]Profile)
+	err := viper.UnmarshalKey(CONFIG_KEY_PROFILES, &profiles)
+	return profiles, err
 }
 
-func GetProfile(id string) (*Profile, error) {
+func ListProfiles() map[string]Profile {
 	profiles, err := getAllProfiles()
 	if err == nil {
-		return profiles[id], nil
+		return profiles
 	} else {
-		return nil, err
+		return make(map[string]Profile, 0)
 	}
+}
+
+func GetProfile(id string) (Profile, bool) {
+	profiles, err := getAllProfiles()
+	if err != nil {
+		fmt.Println(err)
+	}
+	profile, exists := profiles[id]
+	return profile, exists
+
 }
 
 /*
@@ -40,22 +50,19 @@ This reset the Path in env.
 Sets all envvars from profile config.
 prepends all applications mentioned in profile to the path
 */
-func ActivateProfile(id string) error {
-	profile, err := GetProfile(id)
-	if err == nil {
-		if profile != nil {
-			utils.ResetEnvPath()
-			for envVar, value := range profile.EnvVars {
-				log.Printf("set env variable %s = %s", strings.ToUpper(envVar), value)
-				utils.SetEnvVariable(envVar, value)
-			}
-			ActivateApps(profile.Applications)
-			return nil
-		} else {
-			return fmt.Errorf("profile [%s] not found", id)
+func ActivateProfile(id string) bool {
+	profile, exists := GetProfile(id)
+	if exists {
+		utils.ResetEnvPath()
+		for envVar, value := range profile.EnvVars {
+			log.Printf("set env variable %s = %s", strings.ToUpper(envVar), value)
+			utils.SetEnvVariable(envVar, value)
 		}
+		ActivateApps(profile.Applications)
+		return true
 	} else {
-		return err
+		fmt.Errorf("profile [%s] not found", id)
+		return false
 	}
 }
 
