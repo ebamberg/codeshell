@@ -10,6 +10,7 @@ import (
 
 var defaults = map[string]string{
 	"local.paths.applications": "./apps/",
+	"terminal.style.title":     "Codeshell",
 }
 
 func setDefaults() {
