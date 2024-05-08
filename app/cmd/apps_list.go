@@ -19,7 +19,8 @@ var appsListCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		installed := applications.ListInstalledAppications()
 		if len(installed) > 0 {
-			output.PrintAsTable(installed, func(row any) []string {
+			header := []string{"Name", "Status"}
+			output.PrintAsTableH(installed, header, func(row any) []string {
 				app := row.(applications.Application)
 				return []string{app.DisplayName, app.Status.String()}
 			})

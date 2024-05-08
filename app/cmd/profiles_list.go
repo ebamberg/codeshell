@@ -6,7 +6,6 @@ package cmd
 import (
 	"codeshell/output"
 	"codeshell/profiles"
-	"fmt"
 
 	"github.com/spf13/cobra"
 )
@@ -19,12 +18,13 @@ var profilesListCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		p := profiles.ListProfiles()
 		if len(p) > 0 {
-			output.PrintAsTable(p, func(row any) []string {
+			header := []string{"Profile Name"}
+			output.PrintAsTableH(p, header, func(row any) []string {
 				profile := row.(profiles.Profile)
 				return []string{profile.Displayname}
 			})
 		} else {
-			fmt.Printf("no profiles found.")
+			output.Println("no profiles found.")
 		}
 	},
 }

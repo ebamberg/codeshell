@@ -1,7 +1,10 @@
 package shell
 
 import (
+	"bytes"
 	"codeshell/config"
+	"codeshell/output"
+	"io"
 	"os/exec"
 	"slices"
 	"strings"
@@ -22,13 +25,12 @@ func Run(rootCmd *cobra.Command) {
 	//	os.Exit(0)
 	// })
 	for {
-
 		result, _ := inputPrompt.Show()
 		if result == "quit" || result == "exit" {
 			break
 		}
 		// Print a blank line for better readability
-		pterm.Println()
+		output.Println("")
 		execute(result)
 		// Print the user's answer with an info prefix
 		//	pterm.Info.Printfln(": %s", result)
@@ -49,21 +51,44 @@ func clear() {
 
 func execute(prompt string) {
 	cmdArgs := strings.Split(prompt, " ")
-	if isInternalCommand(cmdArgs) {
+	if cmdArgs[0] == "help" {
+		output.Infoln(cobraRootCmd.UsageString())
+	} else if isInternalCommand(cmdArgs) {
 		cobraRootCmd.SetArgs(cmdArgs)
+		inbuf := bytes.NewBufferString("")
+		errbuf := bytes.NewBufferString("")
+		cobraRootCmd.SetOut(inbuf)
+		cobraRootCmd.SetErr(errbuf)
 		err := cobraRootCmd.Execute()
 		if err != nil {
-			pterm.Error.Println(err)
+			output.Errorln(err)
+		} else {
+			sIn, e1 := io.ReadAll(inbuf)
+			sErr, e2 := io.ReadAll(errbuf)
+			if len(sIn) > 0 {
+				output.Println(string(sIn))
+			}
+			if len(sErr) > 0 {
+				output.Errorln(string(sErr))
+			}
+			if e1 != nil {
+				output.Errorln(e1)
+			}
+			if e1 != nil {
+				output.Errorln(e2)
+			}
+
 		}
 	} else {
 		exe := cmdArgs[0]
 		args := cmdArgs[1:]
 		cmd := exec.Command(exe, args...)
+
 		out, err := cmd.CombinedOutput()
 		if err != nil {
-			pterm.Error.Println(err)
+			output.Errorln(err)
 		} else {
-			pterm.Println(string(out))
+			output.Println(string(out))
 		}
 	}
 }

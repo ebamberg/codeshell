@@ -21,12 +21,17 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		profile_id := args[0]
-		activated := profiles.ActivateProfile(profile_id)
-		if activated {
-			fmt.Printf("Profile %s activated\n", profile_id)
+		if len(args) > 0 {
+			profile_id := args[0]
+			activated := profiles.ActivateProfile(profile_id)
+			if activated {
+				fmt.Printf("Profile %s activated\n", profile_id)
+			} else {
+				fmt.Printf("unable to activate profile [%s]\n", profile_id)
+			}
 		} else {
-			fmt.Printf("unable to activate profile [%s]\n", profile_id)
+			fmt.Println("no profile defined")
+			fmt.Println(cmd.UsageString())
 		}
 
 	},
