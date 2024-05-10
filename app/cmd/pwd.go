@@ -13,7 +13,7 @@ import (
 // pwdCmd represents the pwd command
 var pwdCmd = &cobra.Command{
 	Use:   "pwd",
-	Short: "print current wokring directory",
+	Short: "print current working directory",
 	Long:  `print current working directory.`,
 	Run: func(cmd *cobra.Command, args []string) {
 

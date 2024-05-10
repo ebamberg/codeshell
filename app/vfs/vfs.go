@@ -8,6 +8,7 @@ import (
 type VFSEntry struct {
 	IsDir      bool
 	Name       string
+	Path       string
 	filesystem *VFS
 }
 
@@ -48,11 +49,12 @@ func (this LocalVFS) List(path string) []VFSEntry {
 }
 
 func (this LocalVFS) Walk(path string, callback func(entry VFSEntry)) error {
-	return filepath.Walk(path, func(path string, info os.FileInfo, err error) error {
+	return filepath.WalkDir(path, func(path string, info os.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
-		entry := VFSEntry{info.IsDir(), info.Name(), nil}
+
+		entry := VFSEntry{info.IsDir(), info.Name(), path, nil}
 		callback(entry)
 		return nil
 	})

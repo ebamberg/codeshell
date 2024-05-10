@@ -8,6 +8,7 @@ import (
 	"text/tabwriter"
 
 	"github.com/pterm/pterm"
+	"github.com/pterm/pterm/putils"
 )
 
 type OutputPrinter interface {
@@ -149,4 +150,21 @@ func PrintTidySlice[T any](slice []T, header []string, rowMapper func(any) []str
 		i++
 	}
 	pterm.DefaultTable.WithHasHeader().WithSeparator("\t").WithData(tableData).Render()
+}
+
+func PrintDirectoryTree[T any](slice []T, rowMapper func(any) (int, string)) {
+	treeData := pterm.LeveledList{}
+	last := len(slice) - 1
+	i := 0
+	for i < last {
+		level, text := rowMapper(slice[i])
+		treeData = append(treeData, pterm.LeveledListItem{Level: level, Text: text})
+		i++
+	}
+	// Convert the leveled list into a tree structure.
+	tree := putils.TreeFromLeveledList(treeData)
+	tree.Text = "Directory" // Set the root node text.
+
+	// Render the tree structure using the default tree printer.
+	pterm.DefaultTree.WithRoot(tree).Render()
 }
