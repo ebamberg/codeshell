@@ -47,6 +47,10 @@ func Infoln(a any) {
 	out.Infof("%s\n", a)
 }
 
+func Infof(format string, a ...any) {
+	out.Infof(format, a...)
+}
+
 /*
 *
 ----- STDIO
@@ -135,11 +139,14 @@ func (self PTermOutputPrinter) Infof(format string, a ...any) {
 }
 
 // --------------------------------------------------------------------------
-func PrintTidySlice[T any](slice []T, rowMapper func(any) []string) {
+func PrintTidySlice[T any](slice []T, header []string, rowMapper func(any) []string) {
+	tableData := pterm.TableData{header}
 	last := len(slice) - 1
 	i := 0
 	for i < last {
-		fmt.Println(slice[i])
+		cols := rowMapper(slice[i])
+		tableData = append(tableData, cols)
 		i++
 	}
+	pterm.DefaultTable.WithHasHeader().WithSeparator("\t").WithData(tableData).Render()
 }

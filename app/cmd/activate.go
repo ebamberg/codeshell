@@ -4,8 +4,8 @@ Copyright © 2024 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"codeshell/output"
 	"codeshell/profiles"
-	"fmt"
 
 	"github.com/spf13/cobra"
 )
@@ -25,13 +25,13 @@ to quickly create a Cobra application.`,
 			profile_id := args[0]
 			activated := profiles.ActivateProfile(profile_id)
 			if activated {
-				fmt.Printf("Profile %s activated\n", profile_id)
+				output.Infof("Profile %s activated\n", profile_id)
 			} else {
-				fmt.Printf("unable to activate profile [%s]\n", profile_id)
+				output.Errorf("unable to activate profile [%s]\n", profile_id)
 			}
 		} else {
-			fmt.Println("no profile defined")
-			fmt.Println(cmd.UsageString())
+			output.Errorln("no profile defined")
+			output.Infoln(cmd.UsageString())
 		}
 
 	},
