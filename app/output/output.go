@@ -1,6 +1,7 @@
 package output
 
 import (
+	"codeshell/vfs"
 	"fmt"
 	"os"
 	"reflect"
@@ -64,11 +65,11 @@ func (self StdioOutputPrinter) Println(args ...any) {
 }
 
 func (self StdioOutputPrinter) Errorf(format string, a ...any) {
-	fmt.Errorf(format, a)
+	fmt.Errorf(format, a...)
 }
 
 func (self StdioOutputPrinter) Infof(format string, a ...any) {
-	fmt.Printf(format, a)
+	fmt.Printf(format, a...)
 }
 
 func (self StdioOutputPrinter) PrintAsTable(data any, header []string, rowMapper func(any) []string) {
@@ -152,14 +153,11 @@ func PrintTidySlice[T any](slice []T, header []string, rowMapper func(any) []str
 	pterm.DefaultTable.WithHasHeader().WithSeparator("\t").WithData(tableData).Render()
 }
 
-func PrintDirectoryTree[T any](slice []T, rowMapper func(any) (int, string)) {
+func PrintDirectoryTree[T vfs.VFSEntry](sl []T, rowMapper func(T) (int, string)) {
 	treeData := pterm.LeveledList{}
-	last := len(slice) - 1
-	i := 0
-	for i < last {
-		level, text := rowMapper(slice[i])
+	for _, row := range sl {
+		level, text := rowMapper(row)
 		treeData = append(treeData, pterm.LeveledListItem{Level: level, Text: text})
-		i++
 	}
 	// Convert the leveled list into a tree structure.
 	tree := putils.TreeFromLeveledList(treeData)

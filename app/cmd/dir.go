@@ -45,15 +45,14 @@ var dirCmd = &cobra.Command{
 			})
 		}
 
-		output.PrintDirectoryTree(entries, func(row any) (int, string) {
-			entry := row.(vfs.VFSEntry)
+		output.PrintDirectoryTree(entries, func(e vfs.VFSEntry) (int, string) {
 			var name string
-			if entry.IsDir {
-				name = pterm.Yellow(entry.Name)
+			if e.IsDir {
+				name = pterm.Yellow(e.Name)
 			} else {
-				name = entry.Name
+				name = e.Name
 			}
-			level := len(strings.Split(entry.Path, string(os.PathSeparator))) - 1
+			level := len(strings.Split(e.Path, string(os.PathSeparator))) - 1
 			return level, name
 		})
 

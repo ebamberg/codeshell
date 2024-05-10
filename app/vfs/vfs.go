@@ -1,8 +1,10 @@
 package vfs
 
 import (
+	"io/fs"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 type VFSEntry struct {
@@ -15,7 +17,7 @@ type VFSEntry struct {
 type VFS interface {
 	Identifier() string
 	List(path string) []VFSEntry
-	Walk(path string, callback func(entry VFSEntry)) error
+	Walk(path string, maxDepth int, callback func(entry VFSEntry)) error
 	Chdir(path string) error
 	Getwd() (string, error)
 }
@@ -42,16 +44,19 @@ func (this LocalVFS) Getwd() (string, error) {
 
 func (this LocalVFS) List(path string) []VFSEntry {
 	var result = make([]VFSEntry, 0)
-	this.Walk(path, func(entry VFSEntry) {
+	this.Walk(path, 0, func(entry VFSEntry) {
 		result = append(result, entry)
 	})
 	return result
 }
 
-func (this LocalVFS) Walk(path string, callback func(entry VFSEntry)) error {
+func (this LocalVFS) Walk(path string, maxDepth int, callback func(entry VFSEntry)) error {
 	return filepath.WalkDir(path, func(path string, info os.DirEntry, err error) error {
 		if err != nil {
 			return err
+		}
+		if strings.Count(path, string(os.PathSeparator)) > maxDepth {
+			return fs.SkipDir
 		}
 
 		entry := VFSEntry{info.IsDir(), info.Name(), path, nil}
