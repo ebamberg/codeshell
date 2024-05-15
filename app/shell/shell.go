@@ -1,10 +1,8 @@
 package shell
 
 import (
-	"bytes"
 	"codeshell/config"
 	"codeshell/output"
-	"io"
 	"os/exec"
 	"slices"
 	"strings"
@@ -55,30 +53,31 @@ func execute(prompt string) {
 		output.Infoln(cobraRootCmd.UsageString())
 	} else if isInternalCommand(cmdArgs) {
 		cobraRootCmd.SetArgs(cmdArgs)
-		inbuf := bytes.NewBufferString("")
-		errbuf := bytes.NewBufferString("")
-		cobraRootCmd.SetOut(inbuf)
-		cobraRootCmd.SetErr(errbuf)
+		//	inbuf := bytes.NewBufferString("")
+		//	errbuf := bytes.NewBufferString("")
+		//	cobraRootCmd.SetOut(inbuf)
+		//	cobraRootCmd.SetErr(errbuf)s
 		err := cobraRootCmd.Execute()
 		if err != nil {
 			output.Errorln(err)
-		} else {
-			sIn, e1 := io.ReadAll(inbuf)
-			sErr, e2 := io.ReadAll(errbuf)
-			if len(sIn) > 0 {
-				output.Println(string(sIn))
-			}
-			if len(sErr) > 0 {
-				output.Errorln(string(sErr))
-			}
-			if e1 != nil {
-				output.Errorln(e1)
-			}
-			if e1 != nil {
-				output.Errorln(e2)
-			}
+			//		} else {
+			//			sIn, e1 := io.ReadAll(inbuf)
+			//			sErr, e2 := io.ReadAll(errbuf)
+			//			if len(sIn) > 0 {
+			//				fmt.Println(sIn)
+			//			}
+			//			if len(sErr) > 0 {
+			//				output.Errorln(string(sErr))
+			//			}
+			//			if e1 != nil {
+			//				output.Errorln(e1)
+			//			}
+			//			if e1 != nil {
+			//				output.Errorln(e2)
+			//			}
 
 		}
+		output.Println("")
 	} else {
 		exe := cmdArgs[0]
 		args := cmdArgs[1:]

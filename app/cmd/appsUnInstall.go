@@ -25,7 +25,7 @@ var appsUnInstallCmd = &cobra.Command{
 			case applications.Installed:
 				err := applications.UnInstall(newApp)
 				if err == nil {
-					output.Infof("application [%s] installed.", newAppId)
+					output.Infof("application [%s] uninstalled.", newAppId)
 				} else {
 					output.Errorf("could not install application [%s]. [%s] ", newAppId, err)
 				}
