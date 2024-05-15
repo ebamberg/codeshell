@@ -4,6 +4,7 @@ import (
 	"codeshell/config"
 	"codeshell/utils"
 	"fmt"
+	"maps"
 	"os"
 	"path/filepath"
 	"slices"
@@ -30,19 +31,26 @@ func (s Status) String() string {
 	return statuses[s-1]
 }
 
+type appInstallationSource struct {
+	url  string
+	size int
+}
+
 type Application struct {
-	id          string
+	Id          string
 	DisplayName string
 	Path        string
 	BinaryPath  string
 	Status      Status
+	Version     string
+	source      appInstallationSource
 }
 
 func (this Application) Activate() {
 	utils.AppendEnvPath(this.BinaryPath)
 	activated := strings.Split(utils.GetEnvVariable(ENV_KEY_ACTIVACTED), ",")
-	if !slices.Contains(activated, this.id) {
-		activated = append(activated, this.id)
+	if !slices.Contains(activated, this.Id) {
+		activated = append(activated, this.Id)
 		utils.SetEnvVariable(ENV_KEY_ACTIVACTED, strings.Join(activated, ","))
 	}
 	fmt.Printf("activated : \t%s\t\t%s\n", this.DisplayName, this.Path)
@@ -52,6 +60,16 @@ func (this Application) Activate() {
 func getActivatedAppIds() []string {
 	activated := utils.GetEnvVariable(ENV_KEY_ACTIVACTED)
 	return strings.Split(activated, ",")
+}
+
+func ListApplications() map[string]Application {
+	apps := make(map[string]Application, 0)
+	available := ListAvailableApplications()
+	installed := ListInstalledAppications()
+
+	maps.Copy(apps, available)
+	maps.Copy(apps, installed)
+	return apps
 }
 
 func ListInstalledAppications() map[string]Application {
@@ -72,7 +90,8 @@ func ListInstalledAppications() map[string]Application {
 				} else {
 					status = Installed
 				}
-				result[app_name] = Application{id, app_name, app_path, bin_path, status}
+
+				result[app_name] = Application{Id: id, DisplayName: app_name, Path: app_path, BinaryPath: bin_path, Status: status}
 			}
 		}
 		return result

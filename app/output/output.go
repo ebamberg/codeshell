@@ -45,8 +45,8 @@ func Errorln(a any) {
 	out.Errorf("%s\n", a)
 }
 
-func Infoln(a any) {
-	out.Infof("%s\n", a)
+func Infoln(a ...any) {
+	out.Infof("%s\n", a...)
 }
 
 func Infof(format string, a ...any) {

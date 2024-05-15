@@ -6,10 +6,13 @@ package cmd
 import (
 	"codeshell/applications"
 	"codeshell/output"
+	"codeshell/style"
 	"fmt"
 
 	"github.com/spf13/cobra"
 )
+
+var showall bool
 
 // listCmd represents the list command
 var appsListCmd = &cobra.Command{
@@ -17,12 +20,18 @@ var appsListCmd = &cobra.Command{
 	Short: "list all applications",
 	Long:  `list all applications.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		installed := applications.ListInstalledAppications()
-		if len(installed) > 0 {
-			header := []string{"Name", "Status"}
-			output.PrintAsTableH(installed, header, func(row any) []string {
+		var apps map[string]applications.Application
+		if showall {
+			apps = applications.ListApplications()
+		} else {
+			apps = applications.ListInstalledAppications()
+		}
+
+		if len(apps) > 0 {
+			header := []string{"Id", "Name", "Version", "Status"}
+			output.PrintAsTableH(apps, header, func(row any) []string {
 				app := row.(applications.Application)
-				return []string{app.DisplayName, app.Status.String()}
+				return []string{app.Id, app.DisplayName, app.Version, style.AppStatus(app.Status)}
 			})
 		} else {
 			fmt.Printf("no applications found.")
@@ -33,13 +42,5 @@ var appsListCmd = &cobra.Command{
 func init() {
 	appsCmd.AddCommand(appsListCmd)
 
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// listCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// listCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	appsListCmd.Flags().BoolVarP(&showall, "all", "a", false, "show all application, available and installed")
 }

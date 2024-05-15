@@ -1,6 +1,7 @@
 package vfs
 
 import (
+	"io"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -20,6 +21,18 @@ type VFS interface {
 	Walk(path string, maxDepth int, callback func(entry VFSEntry)) error
 	Chdir(path string) error
 	Getwd() (string, error)
+	Create(path string) (io.WriteCloser, error)
+	Read(path string) (io.ReadCloser, error)
+}
+
+type ClosableReader struct {
+	io.Reader
+	io.Closer
+}
+
+type ClosableWriter struct {
+	io.Reader
+	io.Closer
 }
 
 var DefaultFilesystem VFS
@@ -33,6 +46,15 @@ type LocalVFS struct {
 
 func (this LocalVFS) Identifier() string {
 	return "local-filesystem"
+}
+
+func (this LocalVFS) Create(path string) (io.WriteCloser, error) {
+	out, err := os.Create(path)
+	return out, err
+}
+func (this LocalVFS) Read(path string) (io.ReadCloser, error) {
+	in, err := os.Open(path)
+	return in, err
 }
 
 func (this LocalVFS) Chdir(path string) error {

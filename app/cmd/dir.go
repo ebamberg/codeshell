@@ -5,6 +5,7 @@ package cmd
 
 import (
 	"codeshell/output"
+	"codeshell/style"
 	"codeshell/vfs"
 	"os"
 	"strings"
@@ -23,6 +24,7 @@ var dirCmd = &cobra.Command{
 	Examples:
 		ls               -	lists the content of current working directory
 		ls /home/users/  - list the content of the directory /home/users/`,
+	Args: cobra.RangeArgs(0, 1),
 	Run: func(cmd *cobra.Command, args []string) {
 		var path string
 		if len(args) > 0 {
@@ -37,7 +39,7 @@ var dirCmd = &cobra.Command{
 				entry := row.(vfs.VFSEntry)
 				var name string
 				if entry.IsDir {
-					name = pterm.Yellow(entry.Name)
+					name = style.Folder(entry.Name)
 				} else {
 					name = entry.Name
 				}

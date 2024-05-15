@@ -2,6 +2,7 @@ package profiles
 
 import (
 	"codeshell/applications"
+	"codeshell/output"
 	"codeshell/utils"
 	"fmt"
 	"log"
@@ -61,13 +62,13 @@ func ActivateProfile(id string) bool {
 		ActivateApps(profile.Applications)
 		return true
 	} else {
-		fmt.Errorf("profile [%s] not found", id)
+		output.Errorf("profile [%s] not found", id)
 		return false
 	}
 }
 
 func ActivateApps(appList []string) {
-	fmt.Println("activating applications...")
+	output.Println("activating applications...")
 
 	installed := applications.ListInstalledAppications()
 	for _, appKey := range appList {
