@@ -2,6 +2,7 @@ package applications
 
 import (
 	"codeshell/config"
+	"codeshell/output"
 	"codeshell/utils"
 	"fmt"
 	"maps"
@@ -83,15 +84,28 @@ func ListInstalledAppications() map[string]Application {
 				id := e.Name()
 				app_name := e.Name()
 				app_path := filepath.Join(appspath, app_name)
-				bin_path := findBinaryPath(app_path)
-				var status Status
-				if slices.Contains(activated, app_name) {
-					status = Activated
-				} else {
-					status = Installed
-				}
+				// list version
+				versions, err := os.ReadDir(app_path)
+				if err == nil {
+					for _, v := range versions {
+						if v.IsDir() {
+							version := v.Name()
+							id = id + ":" + version
+							version_path := filepath.Join(app_path, version)
+							bin_path := findBinaryPath(version_path)
+							var status Status
+							if slices.Contains(activated, app_name) {
+								status = Activated
+							} else {
+								status = Installed
+							}
 
-				result[app_name] = Application{Id: id, DisplayName: app_name, Path: app_path, BinaryPath: bin_path, Status: status}
+							result[app_name] = Application{Id: id, DisplayName: app_name, Version: version, Path: app_path, BinaryPath: bin_path, Status: status}
+						}
+					}
+				} else {
+					output.Errorln(err)
+				}
 			}
 		}
 		return result
