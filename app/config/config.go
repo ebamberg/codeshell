@@ -8,6 +8,8 @@ import (
 	"github.com/spf13/viper"
 )
 
+const CONFIG_KEY_APP_PATH = "local.paths.applications"
+
 var defaults = map[string]string{
 	"local.paths.applications": "./apps/",
 	"terminal.style.title":     "Codeshell",
@@ -57,7 +59,18 @@ func Init(configLocations ...string) {
 			panic(fmt.Errorf("fatal error config file: %w", err))
 		}
 	}
+	createAppPath()
 
+}
+
+func createAppPath() {
+
+	appspath := GetString(CONFIG_KEY_APP_PATH)
+	fmt.Println(">>" + appspath)
+	err := os.MkdirAll(appspath, 0755)
+	if err != nil {
+		panic(err)
+	}
 }
 
 func GetString(param string) string {
