@@ -13,9 +13,8 @@ import (
 
 func setupTestAppFolder() string {
 	appsdir, _ := os.MkdirTemp("", "apps")
-	os.Mkdir(filepath.Join(appsdir, "test1"), os.FileMode(0777))
-	os.Mkdir(filepath.Join(appsdir, "test1", "bin"), os.FileMode(0777))
-	os.Mkdir(filepath.Join(appsdir, "test2"), os.FileMode(0777))
+	os.MkdirAll(filepath.Join(appsdir, "test1", "0.0.1", "bin"), os.FileMode(0777))
+	os.MkdirAll(filepath.Join(appsdir, "test2", "0.0.1"), os.FileMode(0777))
 
 	config.Set(CONFIG_KEY_APP_PATH, appsdir)
 	return appsdir
@@ -43,8 +42,8 @@ func TestListInstalledAppications_have_correct_bin_folder(t *testing.T) {
 
 	applicationsfound := ListInstalledAppications()
 
-	assert.True(t, strings.HasSuffix(applicationsfound["test1"].BinaryPath, "bin"))
-	assert.True(t, strings.HasSuffix(applicationsfound["test2"].BinaryPath, "test2"))
+	assert.True(t, strings.HasSuffix(applicationsfound["test1:0.0.1"].BinaryPath, filepath.Join("0.0.1", "bin")))
+	assert.True(t, strings.HasSuffix(applicationsfound["test2:0.0.1"].BinaryPath, filepath.Join("test2", "0.0.1")))
 }
 
 func TestActivateApp(t *testing.T) {
@@ -53,9 +52,9 @@ func TestActivateApp(t *testing.T) {
 	defer teardownTestAppFolder(appsdir)
 
 	applicationsfound := ListInstalledAppications()
-	applicationsfound["test1"].Activate()
+	applicationsfound["test1:0.0.1"].Activate()
 
-	assert.Contains(t, strings.Split(utils.GetEnvVariable(ENV_KEY_ACTIVACTED), ","), "test1")
+	assert.Contains(t, strings.Split(utils.GetEnvVariable(ENV_KEY_ACTIVACTED), ","), "test1:0.0.1")
 }
 
 func TestActivateApp_twice_doesnt_add_app_twice(t *testing.T) {
@@ -64,12 +63,12 @@ func TestActivateApp_twice_doesnt_add_app_twice(t *testing.T) {
 	defer teardownTestAppFolder(appsdir)
 
 	applicationsfound := ListInstalledAppications()
-	applicationsfound["test1"].Activate()
-	applicationsfound["test1"].Activate()
+	applicationsfound["test1:0.0.1"].Activate()
+	applicationsfound["test1:0.0.1"].Activate()
 	ac := strings.Split(utils.GetEnvVariable(ENV_KEY_ACTIVACTED), ",")
 	var count int
 	for _, a := range ac {
-		if a == "test1" {
+		if a == "test1:0.0.1" {
 			count++
 		}
 	}
@@ -82,12 +81,12 @@ func TestListInstalledApplications_have_correct_status(t *testing.T) {
 	defer teardownTestAppFolder(appsdir)
 
 	origActivated := utils.GetEnvVariable(ENV_KEY_ACTIVACTED)
-	utils.SetEnvVariable(ENV_KEY_ACTIVACTED, "test2,test3")
+	utils.SetEnvVariable(ENV_KEY_ACTIVACTED, "test2:0.0.1,test3:0.0.1")
 	defer utils.SetEnvVariable(ENV_KEY_ACTIVACTED, origActivated)
 	applicationsfound := ListInstalledAppications()
 
-	assert.Equal(t, Installed, applicationsfound["test1"].Status)
-	assert.Equal(t, Activated, applicationsfound["test2"].Status)
+	assert.Equal(t, Installed, applicationsfound["test1:0.0.1"].Status)
+	assert.Equal(t, Activated, applicationsfound["test2:0.0.1"].Status)
 }
 
 func TestApplicationsStatus(t *testing.T) {

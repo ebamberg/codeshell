@@ -111,10 +111,8 @@ const CONFIG_KEY_APP_PATH = "local.paths.applications"
 
 func setupTestAppFolder() string {
 	appsdir, _ := os.MkdirTemp("", "apps")
-	os.Mkdir(filepath.Join(appsdir, "java"), os.FileMode(0777))
-	os.Mkdir(filepath.Join(appsdir, "java", "bin"), os.FileMode(0777))
-	os.Mkdir(filepath.Join(appsdir, "maven"), os.FileMode(0777))
-	os.Mkdir(filepath.Join(appsdir, "maven", "bin"), os.FileMode(0777))
+	os.MkdirAll(filepath.Join(appsdir, "java", "0.0.1", "bin"), os.FileMode(0777))
+	os.MkdirAll(filepath.Join(appsdir, "maven", "0.0.1", "bin"), os.FileMode(0777))
 
 	config.Set(CONFIG_KEY_APP_PATH, appsdir)
 	return appsdir
@@ -130,9 +128,9 @@ func Test_ActivateApps(t *testing.T) {
 	defer teardownTestAppFolder(testAppFolder)
 
 	utils.ResetEnvPath()
-	ActivateApps([]string{"java", "maven"})
+	ActivateApps([]string{"java:0.0.1", "maven:0.0.1"})
 	path := config.GetString("Path")
-	assert.True(t, strings.Contains(path, filepath.Join(testAppFolder, "java", "bin")))
-	assert.True(t, strings.Contains(path, filepath.Join(testAppFolder, "maven", "bin")))
+	assert.True(t, strings.Contains(path, filepath.Join(testAppFolder, "java", "0.0.1", "bin")))
+	assert.True(t, strings.Contains(path, filepath.Join(testAppFolder, "maven", "0.0.1", "bin")))
 
 }

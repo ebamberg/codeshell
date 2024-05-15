@@ -94,13 +94,13 @@ func ListInstalledAppications() map[string]Application {
 							version_path := filepath.Join(app_path, version)
 							bin_path := findBinaryPath(version_path)
 							var status Status
-							if slices.Contains(activated, app_name) {
+							if slices.Contains(activated, id) {
 								status = Activated
 							} else {
 								status = Installed
 							}
 
-							result[app_name] = Application{Id: id, DisplayName: app_name, Version: version, Path: app_path, BinaryPath: bin_path, Status: status}
+							result[id] = Application{Id: id, DisplayName: app_name, Version: version, Path: app_path, BinaryPath: bin_path, Status: status}
 						}
 					}
 				} else {

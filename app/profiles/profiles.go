@@ -5,8 +5,6 @@ import (
 	"codeshell/output"
 	"codeshell/utils"
 	"fmt"
-	"log"
-	"strings"
 
 	"github.com/spf13/viper"
 )
@@ -56,7 +54,7 @@ func ActivateProfile(id string) bool {
 	if exists {
 		utils.ResetEnvPath()
 		for envVar, value := range profile.EnvVars {
-			log.Printf("set env variable %s = %s", strings.ToUpper(envVar), value)
+			//	log.Printf("set env variable %s = %s", strings.ToUpper(envVar), value)
 			utils.SetEnvVariable(envVar, value)
 		}
 		ActivateApps(profile.Applications)
@@ -72,6 +70,7 @@ func ActivateApps(appList []string) {
 
 	installed := applications.ListInstalledAppications()
 	for _, appKey := range appList {
+		fmt.Println(appKey)
 		if app, ok := installed[appKey]; ok {
 			app.Activate()
 		} else {
