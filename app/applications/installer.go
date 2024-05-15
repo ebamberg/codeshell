@@ -10,9 +10,10 @@ import (
 )
 
 var available = map[string]Application{
-	"eclipse": Application{Id: "eclipse", DisplayName: "Eclipse", Status: Available},
-	"maven":   Application{Id: "maven", DisplayName: "Apache Maven", Status: Available},
-	"npp":     Application{Id: "npp", DisplayName: "Notepad++", Status: Available, Version: "8.6.7", source: appInstallationSource{size: 5998909, url: "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v8.6.7/npp.8.6.7.portable.x64.zip"}},
+	"eclipse-java": Application{Id: "eclipse-java", DisplayName: "Eclipse for Java and WebDev", Status: Available, Version: "2024-03", source: appInstallationSource{size: 0, url: "https://www.eclipse.org/downloads/download.php?file=/technology/epp/downloads/release/2024-03/R/eclipse-jee-2024-03-R-win32-x86_64.zip"}},
+	"eclipse-cpp":  Application{Id: "eclipse-cpp", DisplayName: "Eclipse for C/C++ developer", Status: Available, Version: "2024-03", source: appInstallationSource{size: 0, url: "https://www.eclipse.org/downloads/download.php?file=/technology/epp/downloads/release/2024-03/R/eclipse-cpp-2024-03-R-win32-x86_64.zip"}},
+	"maven":        Application{Id: "maven", DisplayName: "Apache Maven", Status: Available, Version: "3.9.6", source: appInstallationSource{size: 9513253, url: "https://dlcdn.apache.org/maven/maven-3/3.9.6/binaries/apache-maven-3.9.6-bin.zip"}},
+	"npp":          Application{Id: "npp", DisplayName: "Notepad++", Status: Available, Version: "8.6.7", source: appInstallationSource{size: 5998909, url: "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v8.6.7/npp.8.6.7.portable.x64.zip"}},
 }
 
 func ListAvailableApplications() map[string]Application {
