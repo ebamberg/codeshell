@@ -4,7 +4,7 @@ Copyright © 2024 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
-	"fmt"
+	"codeshell/output"
 
 	"github.com/spf13/cobra"
 )
@@ -20,7 +20,7 @@ var profilesCmd = &cobra.Command{
 	`,
 	Aliases: []string{"profile"},
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("profiles called")
+		output.Infoln(cmd.UsageString())
 	},
 }
 

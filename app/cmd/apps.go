@@ -4,7 +4,7 @@ Copyright © 2024 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
-	"fmt"
+	"codeshell/output"
 
 	"github.com/spf13/cobra"
 )
@@ -15,7 +15,7 @@ var appsCmd = &cobra.Command{
 	Short: "manage, install and uninstall applications.",
 	Long:  `manage, install and uninstall applications..`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("apps called")
+		output.Infoln(cmd.UsageString())
 	},
 }
 
