@@ -44,6 +44,9 @@ var available = map[string][]Application{
 				size:             9513253,
 				url:              "https://dlcdn.apache.org/maven/maven-3/3.9.6/binaries/apache-maven-3.9.6-bin.zip",
 				ignoreRootFolder: true,
+				EnvVars: map[string]string{
+					"MAVEN_HOME": "${app_home}",
+				},
 			}},
 	},
 	"npp": []Application{
@@ -55,6 +58,35 @@ var available = map[string][]Application{
 			source: appInstallationSource{
 				size: 5998909,
 				url:  "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v8.6.7/npp.8.6.7.portable.x64.zip",
+			}},
+	},
+	"python": []Application{
+		{
+			Id:          "python",
+			DisplayName: "Python",
+			Status:      Available,
+			Version:     "3.12",
+			source: appInstallationSource{
+				size: 0,
+				url:  "https://www.python.org/ftp/python/3.12.3/python-3.12.3-embed-amd64.zip",
+			}},
+		{
+			Id:          "python",
+			DisplayName: "Python",
+			Status:      Available,
+			Version:     "3.11",
+			source: appInstallationSource{
+				size: 0,
+				url:  "https://www.python.org/ftp/python/3.11.9/python-3.11.9-embed-amd64.zip",
+			}},
+		{
+			Id:          "python",
+			DisplayName: "Python",
+			Status:      Available,
+			Version:     "3.9",
+			source: appInstallationSource{
+				size: 0,
+				url:  "https://www.python.org/ftp/python/3.9.13/python-3.9.13-embed-amd64.zip",
 			}},
 	},
 }

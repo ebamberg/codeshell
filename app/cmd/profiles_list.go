@@ -18,10 +18,10 @@ var profilesListCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		p := profiles.ListProfiles()
 		if len(p) > 0 {
-			header := []string{"Profile Name"}
+			header := []string{"id", "Profile Name"}
 			output.PrintAsTableH(p, header, func(row any) []string {
 				profile := row.(profiles.Profile)
-				return []string{profile.Displayname}
+				return []string{profile.Id, profile.Displayname}
 			})
 		} else {
 			output.Println("no profiles found.")

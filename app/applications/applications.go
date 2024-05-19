@@ -37,6 +37,7 @@ type appInstallationSource struct {
 	url              string
 	size             int
 	ignoreRootFolder bool
+	EnvVars          map[string]string
 }
 
 type Application struct {

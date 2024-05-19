@@ -12,9 +12,11 @@ import (
 const CONFIG_KEY_PROFILES = "profiles"
 
 type Profile struct {
-	Displayname  string            `mapstructure:"displayName"`
-	EnvVars      map[string]string `mapstructure:"envVars"`
-	Applications []string          `mapstructure:"applications"`
+	Id              string
+	Displayname     string            `mapstructure:"displayName"`
+	EnvVars         map[string]string `mapstructure:"envVars"`
+	Applications    []string          `mapstructure:"applications"`
+	AutoInstallApps bool              `mapstructure:"autoInstallApps"`
 }
 
 func getAllProfiles() (map[string]Profile, error) {
@@ -57,7 +59,8 @@ func ActivateProfile(id string) bool {
 			//	log.Printf("set env variable %s = %s", strings.ToUpper(envVar), value)
 			utils.SetEnvVariable(envVar, value)
 		}
-		ActivateApps(profile.Applications)
+
+		ActivateApps(profile.Applications, profile.AutoInstallApps)
 		return true
 	} else {
 		output.Errorf("profile [%s] not found", id)
@@ -65,14 +68,23 @@ func ActivateProfile(id string) bool {
 	}
 }
 
-func ActivateApps(appList []string) {
+func ActivateApps(appList []string, autoInstallApps bool) {
 	pi := output.NewProgressIndicator("activating applications...").Start()
 	defer pi.Stop()
 
 	//	installed := applications.ListInstalledAppications()
 	for _, appKey := range appList {
-		if app, ok := applications.FindById(appKey); ok && app.Status == applications.Installed {
+		app, ok := applications.FindById(appKey)
+		if ok && app.Status == applications.Installed {
 			app.Activate()
+		} else if ok && autoInstallApps && app.Status == applications.Available {
+			err := applications.Install(app)
+			app, ok := applications.FindById(appKey)
+			if err == nil && ok {
+				app.Activate()
+			} else {
+				output.Errorf("unable to install app %s. skipped activation..%s\n", err)
+			}
 		} else {
 			output.Errorf("app %s is not installed. skipped activation.\n", appKey)
 		}
