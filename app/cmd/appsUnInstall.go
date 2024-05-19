@@ -19,8 +19,7 @@ var appsUnInstallCmd = &cobra.Command{
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		newAppId := args[0]
-		available := applications.ListApplications()
-		if newApp, isMapContainsKey := available[newAppId]; isMapContainsKey {
+		if newApp, isAppFound := applications.FindById(newAppId); isAppFound {
 			switch newApp.Status {
 			case applications.Installed:
 				err := applications.UnInstall(newApp)

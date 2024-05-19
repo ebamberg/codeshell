@@ -66,15 +66,15 @@ func ActivateProfile(id string) bool {
 }
 
 func ActivateApps(appList []string) {
-	output.Println("activating applications...")
+	pi := output.NewProgressIndicator("activating applications...").Start()
+	defer pi.Stop()
 
-	installed := applications.ListInstalledAppications()
+	//	installed := applications.ListInstalledAppications()
 	for _, appKey := range appList {
-		fmt.Println(appKey)
-		if app, ok := installed[appKey]; ok {
+		if app, ok := applications.FindById(appKey); ok && app.Status == applications.Installed {
 			app.Activate()
 		} else {
-			fmt.Printf("app %s is not installed. skipped activation.\n", appKey)
+			output.Errorf("app %s is not installed. skipped activation.\n", appKey)
 		}
 	}
 

@@ -24,8 +24,7 @@ to quickly create a Cobra application.`,
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		newAppId := args[0]
-		available := applications.ListApplications()
-		if newApp, isMapContainsKey := available[newAppId]; isMapContainsKey {
+		if newApp, isAppFound := applications.FindById(newAppId); isAppFound {
 			if newApp.Status == applications.Available {
 				err := applications.Install(newApp)
 				if err == nil {

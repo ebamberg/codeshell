@@ -20,16 +20,25 @@ var appsListCmd = &cobra.Command{
 	Short: "list all applications",
 	Long:  `list all applications.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		var apps map[string]applications.Application
-		if showall {
-			apps = applications.ListApplications()
+
+		allFlag := cmd.Flag("all")
+		if allFlag.Value.String() == "true" {
+			showall = true
 		} else {
-			apps = applications.ListInstalledAppications()
+			showall = false
+		}
+
+		var apps []applications.Application
+
+		if showall {
+			apps = applications.FlattenMap(applications.ListApplications())
+		} else {
+			apps = applications.FlattenMap(applications.ListInstalledAppications())
 		}
 
 		if len(apps) > 0 {
 			header := []string{"Id", "Name", "Version", "Status"}
-			output.PrintAsTableH(apps, header, func(row any) []string {
+			output.PrintTidySlice(apps, header, func(row any) []string {
 				app := row.(applications.Application)
 				return []string{app.Id, app.DisplayName, app.Version, style.AppStatus(app.Status)}
 			})

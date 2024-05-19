@@ -11,9 +11,9 @@ import (
 )
 
 type ProgressIndicator interface {
-	Start()
-	Stop()
-	Increase()
+	Start() ProgressIndicator
+	Stop() ProgressIndicator
+	Increase() ProgressIndicator
 }
 
 // p, _ := pterm.DefaultProgressbar.WithTotal(len(fakeInstallList)).WithTitle("Downloading stuff").Start()
@@ -73,20 +73,21 @@ type ProgressIndicatorPTerm struct {
 	spinner *pterm.SpinnerPrinter
 }
 
-func (i *ProgressIndicatorPTerm) Start() {
+func (i *ProgressIndicatorPTerm) Start() ProgressIndicator {
 	i.spinner = &pterm.DefaultSpinner
 	i.spinner, _ = i.spinner.Start(i.message)
+	return i
 }
 
-func (i *ProgressIndicatorPTerm) Stop() {
+func (i *ProgressIndicatorPTerm) Stop() ProgressIndicator {
 	if i.spinner != nil {
 		i.spinner.Success("finished")
 	}
-
+	return i
 }
 
-func (i *ProgressIndicatorPTerm) Increase() {
-
+func (i *ProgressIndicatorPTerm) Increase() ProgressIndicator {
+	return i
 }
 
 func NewProgressIndicator(text string) ProgressIndicator {
@@ -191,7 +192,7 @@ func (self PTermOutputPrinter) Successf(format string, a ...any) {
 // --------------------------------------------------------------------------
 func PrintTidySlice[T any](slice []T, header []string, rowMapper func(any) []string) {
 	tableData := pterm.TableData{header}
-	last := len(slice) - 1
+	last := len(slice)
 	i := 0
 	for i < last {
 		cols := rowMapper(slice[i])
