@@ -47,7 +47,7 @@ var dirCmd = &cobra.Command{
 			})
 		}
 
-		output.PrintDirectoryTree(entries, func(e vfs.VFSEntry) (int, string) {
+		vfs.PrintDirectoryTree(entries, func(e vfs.VFSEntry) (int, string) {
 			var name string
 			if e.IsDir {
 				name = pterm.Yellow(e.Name)

@@ -29,7 +29,7 @@ to quickly create a Cobra application.`,
 			if newApp.Status == applications.Available {
 				err := applications.Install(newApp)
 				if err == nil {
-					output.Infof("application [%s] installed.", newAppId)
+					output.Successf("application [%s] installed.", newAppId)
 				} else {
 					output.Errorf("could not install application [%s]. ", newAppId, err)
 				}

@@ -26,7 +26,7 @@ to quickly create a Cobra application.`,
 			profile_id := args[0]
 			activated := profiles.ActivateProfile(profile_id)
 			if activated {
-				output.Infof("Profile %s activated\n", profile_id)
+				output.Successf("Profile %s activated\n", profile_id)
 			} else {
 				output.Errorf("unable to activate profile [%s]\n", profile_id)
 			}

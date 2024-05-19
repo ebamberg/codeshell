@@ -18,7 +18,7 @@ func Run(rootCmd *cobra.Command) {
 	printWelcomeMessage()
 	// Create an interactive text input with single line input mode and show it
 
-	inputPrompt := DefaultInteractivePromptInput
+	inputPrompt := DefaultInteractivePromptInput.WithTextStyle(&pterm.ThemeDefault.PrimaryStyle)
 	// .WithOnInterruptFunc(func() {
 	//	os.Exit(0)
 	// })

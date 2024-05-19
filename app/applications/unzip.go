@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-func unzipSource(source, destination string) error {
+func unzipSource(source, destination string, ignoreRootFolder bool) error {
 	// 1. Open the zip file
 	reader, err := zip.OpenReader(source)
 	if err != nil {
@@ -25,9 +25,19 @@ func unzipSource(source, destination string) error {
 
 	// 3. Iterate over zip files inside the archive and unzip each of them
 	for _, f := range reader.File {
-		err := unzipFile(f, destination)
-		if err != nil {
-			return err
+		if ignoreRootFolder {
+			pathElements := strings.Split(f.Name, "/") // zip file separator mkght not be the same as os.FileSeparator
+			if len(pathElements) > 1 {
+				f.Name = strings.Join(pathElements[1:], "/")
+			} else {
+				f.Name = ""
+			}
+		}
+		if f.Name != "" {
+			err := unzipFile(f, destination)
+			if err != nil {
+				return err
+			}
 		}
 	}
 

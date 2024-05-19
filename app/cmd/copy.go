@@ -31,7 +31,7 @@ var copyCmd = &cobra.Command{
 					defer out.Close()
 					_, err := io.Copy(out, in)
 					if err == nil {
-						output.Infof("content copied from %s to %s\n", src, dest)
+						output.Successf("content copied from %s to %s\n", src, dest)
 					}
 				}
 			}

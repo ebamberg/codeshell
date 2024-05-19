@@ -33,8 +33,9 @@ func (s Status) String() string {
 }
 
 type appInstallationSource struct {
-	url  string
-	size int
+	url              string
+	size             int
+	ignoreRootFolder bool
 }
 
 type Application struct {

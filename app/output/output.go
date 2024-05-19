@@ -1,7 +1,6 @@
 package output
 
 import (
-	"codeshell/vfs"
 	"fmt"
 	"os"
 	"reflect"
@@ -9,14 +8,22 @@ import (
 	"text/tabwriter"
 
 	"github.com/pterm/pterm"
-	"github.com/pterm/pterm/putils"
 )
+
+type ProgressIndicator interface {
+	Start()
+	Stop()
+	Increase()
+}
+
+// p, _ := pterm.DefaultProgressbar.WithTotal(len(fakeInstallList)).WithTitle("Downloading stuff").Start()
 
 type OutputPrinter interface {
 	Println(args ...any)
 	PrintAsTable(data any, header []string, rowMapper func(any) []string)
 	Errorf(format string, a ...any)
 	Infof(format string, a ...any)
+	Successf(format string, a ...any)
 }
 
 var out OutputPrinter
@@ -53,6 +60,39 @@ func Infof(format string, a ...any) {
 	out.Infof(format, a...)
 }
 
+func Successln(a ...any) {
+	out.Successf("%s\n", a...)
+}
+
+func Successf(format string, a ...any) {
+	out.Successf(format, a...)
+}
+
+type ProgressIndicatorPTerm struct {
+	message string
+	spinner *pterm.SpinnerPrinter
+}
+
+func (i *ProgressIndicatorPTerm) Start() {
+	i.spinner = &pterm.DefaultSpinner
+	i.spinner, _ = i.spinner.Start(i.message)
+}
+
+func (i *ProgressIndicatorPTerm) Stop() {
+	if i.spinner != nil {
+		i.spinner.Success("finished")
+	}
+
+}
+
+func (i *ProgressIndicatorPTerm) Increase() {
+
+}
+
+func NewProgressIndicator(text string) ProgressIndicator {
+	return &ProgressIndicatorPTerm{message: text}
+}
+
 /*
 *
 ----- STDIO
@@ -69,6 +109,10 @@ func (self StdioOutputPrinter) Errorf(format string, a ...any) {
 }
 
 func (self StdioOutputPrinter) Infof(format string, a ...any) {
+	fmt.Printf(format, a...)
+}
+
+func (self StdioOutputPrinter) Successf(format string, a ...any) {
 	fmt.Printf(format, a...)
 }
 
@@ -140,6 +184,10 @@ func (self PTermOutputPrinter) Infof(format string, a ...any) {
 	pterm.Info.Printf(format, a...)
 }
 
+func (self PTermOutputPrinter) Successf(format string, a ...any) {
+	pterm.Success.Printf(format, a...)
+}
+
 // --------------------------------------------------------------------------
 func PrintTidySlice[T any](slice []T, header []string, rowMapper func(any) []string) {
 	tableData := pterm.TableData{header}
@@ -151,18 +199,4 @@ func PrintTidySlice[T any](slice []T, header []string, rowMapper func(any) []str
 		i++
 	}
 	pterm.DefaultTable.WithHasHeader().WithSeparator("\t").WithData(tableData).Render()
-}
-
-func PrintDirectoryTree[T vfs.VFSEntry](sl []T, rowMapper func(T) (int, string)) {
-	treeData := pterm.LeveledList{}
-	for _, row := range sl {
-		level, text := rowMapper(row)
-		treeData = append(treeData, pterm.LeveledListItem{Level: level, Text: text})
-	}
-	// Convert the leveled list into a tree structure.
-	tree := putils.TreeFromLeveledList(treeData)
-	tree.Text = "Directory" // Set the root node text.
-
-	// Render the tree structure using the default tree printer.
-	pterm.DefaultTree.WithRoot(tree).Render()
 }
