@@ -128,7 +128,7 @@ func Test_ActivateApps(t *testing.T) {
 	defer teardownTestAppFolder(testAppFolder)
 
 	utils.ResetEnvPath()
-	ActivateApps([]string{"java:0.0.1", "maven:0.0.1"})
+	ActivateApps([]string{"java:0.0.1", "maven:0.0.1"}, false)
 	path := config.GetString("Path")
 	assert.True(t, strings.Contains(path, filepath.Join(testAppFolder, "java", "0.0.1", "bin")))
 	assert.True(t, strings.Contains(path, filepath.Join(testAppFolder, "maven", "0.0.1", "bin")))
