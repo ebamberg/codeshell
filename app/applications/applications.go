@@ -7,10 +7,11 @@ import (
 	"codeshell/utils"
 	"fmt"
 	"maps"
-	"os"
 	"path/filepath"
 	"slices"
 	"strings"
+
+	"github.com/spf13/viper"
 )
 
 const CONFIG_KEY_APP_PATH = "local.paths.applications"
@@ -75,7 +76,7 @@ func FindById(identifier string) (Application, bool) {
 		version = idElements[1]
 	}
 	allApps := ListApplications()
-	if newApps, isMapContainsKey := allApps[id]; isMapContainsKey {
+	if newApps, isMapContainsKey := allApps[id]; isMapContainsKey && len(newApps) > 0 {
 		if version == "" {
 			return newApps[0], true
 		} else {
@@ -100,50 +101,80 @@ func ListApplications() map[string][]Application {
 	installed := ListInstalledAppications()
 
 	maps.Copy(apps, available)
-	maps.Copy(apps, installed)
+	//	maps.Copy(apps, installed)
+	for key, val := range installed {
+		if versions, isMapContainsKey := apps[key]; isMapContainsKey {
+			for _, inst := range val {
+				j := slices.IndexFunc(versions, func(a Application) bool {
+					return a.Version == inst.Version
+				})
+				if j > -1 {
+					// override available entry with installed
+					versions[j] = inst
+				} else {
+					// just appendinstalled version // this should never happen
+					apps[key] = append(apps[key], inst)
+				}
+			}
+		} else {
+			apps[key] = val
+		}
+	}
 	return apps
 }
 
-func ListInstalledAppications() map[string][]Application {
-	appspath := config.GetString(CONFIG_KEY_APP_PATH)
-	entries, err := os.ReadDir(appspath)
-	if err == nil {
-		activated := getActivatedAppIds()
-		result := make(map[string][]Application)
-		for _, e := range entries {
-			if e.IsDir() {
-				id := e.Name()
-				app_name := e.Name()
-				app_path := filepath.Join(appspath, app_name)
-				// list version
-				versions, err := os.ReadDir(app_path)
-				if err == nil {
-					for _, v := range versions {
-						if v.IsDir() {
-							version := v.Name()
-							id = id
-							version_path := filepath.Join(app_path, version)
-							bin_path := findBinaryPath(version_path)
-							var status Status
-							if slices.Contains(activated, id) {
-								//TODO check for version as well
-								status = Activated
-							} else {
-								status = Installed
-							}
+func getLocalApplications() (map[string][]Application, error) {
+	apps := make(map[string][]Application, 0)
+	err := viper.UnmarshalKey(config.CONFIG_KEY_APPLICATIONS_INSTALLED, &apps)
+	return apps, err
+}
 
-							result[id] = append(result[id], Application{Id: id, DisplayName: app_name, Version: version, Path: app_path, BinaryPath: bin_path, Status: status})
-						}
-					}
-				} else {
-					output.Errorln(err)
-				}
-			}
-		}
-		return result
+func ListInstalledAppications() map[string][]Application {
+	apps, err := getLocalApplications()
+	if err == nil {
+		return apps
 	} else {
-		return nil
+		panic(err)
 	}
+	// appspath := config.GetString(CONFIG_KEY_APP_PATH)
+	// entries, err := os.ReadDir(appspath)
+	// if err == nil {
+	// 	activated := getActivatedAppIds()
+	// 	result := make(map[string][]Application)
+	// 	for _, e := range entries {
+	// 		if e.IsDir() {
+	// 			id := e.Name()
+	// 			app_name := e.Name()
+	// 			app_path := filepath.Join(appspath, app_name)
+	// 			// list version
+	// 			versions, err := os.ReadDir(app_path)
+	// 			if err == nil {
+	// 				for _, v := range versions {
+	// 					if v.IsDir() {
+	// 						version := v.Name()
+	// 						id = id
+	// 						version_path := filepath.Join(app_path, version)
+	// 						bin_path := findBinaryPath(version_path)
+	// 						var status Status
+	// 						if slices.Contains(activated, id) {
+	// 							//TODO check for version as well
+	// 							status = Activated
+	// 						} else {
+	// 							status = Installed
+	// 						}
+
+	// 						result[id] = append(result[id], Application{Id: id, DisplayName: app_name, Version: version, Path: app_path, BinaryPath: bin_path, Status: status})
+	// 					}
+	// 				}
+	// 			} else {
+	// 				output.Errorln(err)
+	// 			}
+	// 		}
+	// 	}
+	// 	return result
+	// } else {
+	// 	return nil
+	// }
 }
 
 func FlattenMap(appMap map[string][]Application) []Application {

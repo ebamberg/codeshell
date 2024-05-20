@@ -1,21 +1,26 @@
 local:
-  paths:
-    applications: ./apps/
-
+    paths:
+        applications: C:\Users\erikb\AppData\Local\Temp\apps327018789
 modules:
-  applications: 
-    file-provider:
-      path: ./apps/
-
+    applications:
+        file-provider:
+            path: ./apps/
 profiles:
-  test1:
-    displayname: "test profile"
-    envVars: 
-        TEST_CS_STRING: "hello world!"
-        TEST_CS_2: "foobar"
-        TEST_CS_3: "123"
-    applications: 
-      - java
-      - maven
-  test2:
-    applications: ghi
+    default:
+        autoinstallapps: "true"
+        displayname: default
+        id: default
+    test1:
+        applications:
+            - java
+            - maven
+        displayname: test profile
+        envvars:
+            test_cs_2: foobar
+            test_cs_3: "123"
+            test_cs_string: hello world!
+    test2:
+        applications: ghi
+terminal:
+    style:
+        title: Codeshell

@@ -2,14 +2,13 @@ package profiles
 
 import (
 	"codeshell/applications"
+	"codeshell/config"
 	"codeshell/output"
 	"codeshell/utils"
 	"fmt"
 
 	"github.com/spf13/viper"
 )
-
-const CONFIG_KEY_PROFILES = "profiles"
 
 type Profile struct {
 	Id              string
@@ -21,7 +20,7 @@ type Profile struct {
 
 func getAllProfiles() (map[string]Profile, error) {
 	var profiles = make(map[string]Profile)
-	err := viper.UnmarshalKey(CONFIG_KEY_PROFILES, &profiles)
+	err := viper.UnmarshalKey(config.CONFIG_KEY_PROFILES, &profiles)
 	return profiles, err
 }
 

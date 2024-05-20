@@ -11,8 +11,11 @@ import (
 const CONFIG_KEY_APP_PATH = "local.paths.applications"
 
 var defaults = map[string]string{
-	"local.paths.applications": "./apps/",
-	"terminal.style.title":     "Codeshell",
+	"local.paths.applications":         "./apps/",
+	"terminal.style.title":             "Codeshell",
+	"profiles.default.id":              "default",
+	"profiles.default.displayname":     "default",
+	"profiles.default.autoInstallApps": "true",
 }
 
 func setDefaults() {
@@ -53,7 +56,7 @@ func Init(configLocations ...string) {
 	} else {
 		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
 			// Config file not found; create a new default config file
-			viper.WriteConfigAs("./codeshell.config")
+			viper.WriteConfigAs("./codeshell.config.yaml")
 		} else {
 			// Config file was found but another error was produced
 			panic(fmt.Errorf("fatal error config file: %w", err))
@@ -79,4 +82,12 @@ func GetString(param string) string {
 
 func Set(path string, value any) {
 	viper.Set(path, value)
+	persist()
+}
+
+func persist() {
+	err := viper.WriteConfigAs(viper.ConfigFileUsed())
+	if err != nil {
+		fmt.Println(err)
+	}
 }

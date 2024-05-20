@@ -2,6 +2,7 @@ package applications
 
 import (
 	"codeshell/config"
+	"codeshell/query"
 	"codeshell/vfs"
 	"errors"
 	"net/http"
@@ -107,6 +108,16 @@ func UnInstall(newApp Application) error {
 	}
 	appPath := appPath(newApp)
 	err := os.RemoveAll(appPath)
+	if err == nil {
+		newApp.Status = Available
+		localApps, err := getLocalApplications()
+		if err == nil {
+			localApps[newApp.Id] = query.RemoveElement(localApps[newApp.Id], func(a Application) bool {
+				return a.Id == newApp.Id && a.Version == newApp.Version && a.Status == Installed
+			})
+			config.Set(config.CONFIG_KEY_APPLICATIONS_INSTALLED, localApps)
+		}
+	}
 
 	return err
 }
@@ -136,6 +147,16 @@ func Install(newApp Application) error {
 				//unzip file
 				if err == nil {
 					err = unzipSource(downloadFilePath, appPath, newApp.source.ignoreRootFolder)
+					if err == nil {
+						localApps, err := getLocalApplications()
+						if err == nil {
+							newApp.Path = appPath
+							newApp.BinaryPath = findBinaryPath(appPath)
+							newApp.Status = Installed
+							localApps[newApp.Id] = append(localApps[newApp.Id], newApp)
+							config.Set(config.CONFIG_KEY_APPLICATIONS_INSTALLED, localApps)
+						}
+					}
 				}
 			}
 		}

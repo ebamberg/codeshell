@@ -21,7 +21,7 @@ func TestGetAllProfiles(t *testing.T) {
 	}
 	assert.Nil(t, err)
 	assert.NotNil(t, profiles)
-	assert.Equal(t, 2, len(profiles))
+	assert.Equal(t, 3, len(profiles)) // default profile + 2 profiles that we created
 	assert.Equal(t, "test profile", profiles["test1"].Displayname)
 	assert.Equal(t, []string([]string{"java", "maven"}), profiles["test1"].Applications)
 
