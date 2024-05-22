@@ -54,10 +54,7 @@ func ActivateProfile(id string) bool {
 	profile, exists := GetProfile(id)
 	if exists {
 		utils.ResetEnvPath()
-		for envVar, value := range profile.EnvVars {
-			//	log.Printf("set env variable %s = %s", strings.ToUpper(envVar), value)
-			utils.SetEnvVariable(envVar, value)
-		}
+		setEnvVariables(profile.EnvVars)
 
 		ActivateApps(profile.Applications, profile.AutoInstallApps)
 		return true
@@ -89,4 +86,11 @@ func ActivateApps(appList []string, autoInstallApps bool) {
 		}
 	}
 
+}
+
+func setEnvVariables(envVars map[string]string) {
+	for envVar, value := range envVars {
+		//	log.Printf("set env variable %s = %s", strings.ToUpper(envVar), value)
+		utils.SetEnvVariable(envVar, value)
+	}
 }

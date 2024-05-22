@@ -3,6 +3,7 @@ package applications
 import (
 	"codeshell/config"
 	"codeshell/query"
+	"codeshell/templating"
 	"codeshell/vfs"
 	"errors"
 	"net/http"
@@ -45,8 +46,8 @@ var available = map[string][]Application{
 				size:             9513253,
 				url:              "https://dlcdn.apache.org/maven/maven-3/3.9.6/binaries/apache-maven-3.9.6-bin.zip",
 				ignoreRootFolder: true,
-				EnvVars: map[string]string{
-					"MAVEN_HOME": "${app_home}",
+				envVars: map[string]string{
+					"MAVEN_HOME": "{{.Path}}",
 				},
 			}},
 	},
@@ -150,10 +151,19 @@ func Install(newApp Application) error {
 					if err == nil {
 						localApps, err := getLocalApplications()
 						if err == nil {
-							newApp.Path = appPath
-							newApp.BinaryPath = findBinaryPath(appPath)
-							newApp.Status = Installed
-							localApps[newApp.Id] = append(localApps[newApp.Id], newApp)
+							installedApp := newApp // copy our struct
+							installedApp.Path = appPath
+							installedApp.BinaryPath = findBinaryPath(appPath)
+							installedApp.Status = Installed
+							// copy envVars from source to application
+							installedApp.EnvVars = make(map[string]string)
+							if newApp.source.envVars != nil {
+								for varName, varValue := range newApp.source.envVars {
+									installedApp.EnvVars[varName] = templating.ProcessPlaceholders(varValue, installedApp)
+								}
+							}
+
+							localApps[installedApp.Id] = append(localApps[installedApp.Id], installedApp)
 							config.Set(config.CONFIG_KEY_APPLICATIONS_INSTALLED, localApps)
 						}
 					}

@@ -38,7 +38,7 @@ type appInstallationSource struct {
 	url              string
 	size             int
 	ignoreRootFolder bool
-	EnvVars          map[string]string
+	envVars          map[string]string
 }
 
 type Application struct {
@@ -48,6 +48,7 @@ type Application struct {
 	BinaryPath  string
 	Status      Status
 	Version     string
+	EnvVars     map[string]string `mapstructure:"envVars"`
 	source      appInstallationSource
 }
 
@@ -58,13 +59,9 @@ func (this Application) Activate() {
 		activated = append(activated, this.Id)
 		utils.SetEnvVariable(ENV_KEY_ACTIVACTED, strings.Join(activated, ","))
 	}
+	setEnvVariables(this.EnvVars)
 	output.Infof("activated : \t%s\t\t%s\n", this.DisplayName, this.Path)
 
-}
-
-func getActivatedAppIds() []string {
-	activated := utils.GetEnvVariable(ENV_KEY_ACTIVACTED)
-	return strings.Split(activated, ",")
 }
 
 func FindById(identifier string) (Application, bool) {
@@ -196,4 +193,15 @@ func findBinaryPath(app_path string) string {
 		return app_path
 	}
 
+}
+
+func setEnvVariables(envVars map[string]string) {
+	for envVar, value := range envVars {
+		utils.SetEnvVariable(envVar, value)
+	}
+}
+
+func getActivatedAppIds() []string {
+	activated := utils.GetEnvVariable(ENV_KEY_ACTIVACTED)
+	return strings.Split(activated, ",")
 }
