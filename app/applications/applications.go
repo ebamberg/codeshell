@@ -6,7 +6,6 @@ import (
 	"codeshell/query"
 	"codeshell/utils"
 	"fmt"
-	"maps"
 	"path/filepath"
 	"slices"
 	"strings"
@@ -97,7 +96,13 @@ func ListApplications() map[string][]Application {
 	available := ListAvailableApplications()
 	installed := ListInstalledAppications()
 
-	maps.Copy(apps, available)
+	// maps.Copy(apps, available)
+	// make a deep copy that also create new slices
+	for k, sli := range available {
+		tmp := make([]Application, 0, len(sli))
+		apps[k] = append(tmp, sli...)
+	}
+
 	//	maps.Copy(apps, installed)
 	for key, val := range installed {
 		if versions, isMapContainsKey := apps[key]; isMapContainsKey {
