@@ -17,7 +17,7 @@ type VFSEntry struct {
 
 type VFS interface {
 	Identifier() string
-	List(path string) []VFSEntry
+	List(path string, maxDepth int) []VFSEntry
 	Walk(path string, maxDepth int, callback func(entry VFSEntry)) error
 	Chdir(path string) error
 	Getwd() (string, error)
@@ -64,9 +64,9 @@ func (this LocalVFS) Getwd() (string, error) {
 	return os.Getwd()
 }
 
-func (this LocalVFS) List(path string) []VFSEntry {
+func (this LocalVFS) List(path string, maxDepth int) []VFSEntry {
 	var result = make([]VFSEntry, 0)
-	this.Walk(path, 0, func(entry VFSEntry) {
+	this.Walk(path, maxDepth, func(entry VFSEntry) {
 		result = append(result, entry)
 	})
 	return result

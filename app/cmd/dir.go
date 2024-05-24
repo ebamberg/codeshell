@@ -26,13 +26,14 @@ var dirCmd = &cobra.Command{
 		ls /home/users/  - list the content of the directory /home/users/`,
 	Args: cobra.RangeArgs(0, 1),
 	Run: func(cmd *cobra.Command, args []string) {
+		depth, _ := cmd.Flags().GetInt("depth")
 		var path string
 		if len(args) > 0 {
 			path = args[0]
 		} else {
 			path = "./"
 		}
-		entries := vfs.DefaultFilesystem.List(path)
+		entries := vfs.DefaultFilesystem.List(path, depth)
 
 		if false == true {
 			output.PrintTidySlice(entries, []string{"Name"}, func(row any) []string {
@@ -63,4 +64,5 @@ var dirCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(dirCmd)
+	dirCmd.Flags().Int("depth", 0, "recursive showing directory to depth")
 }
