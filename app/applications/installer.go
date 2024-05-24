@@ -11,92 +11,6 @@ import (
 	"path/filepath"
 )
 
-var available = map[string][]Application{
-	"eclipse-jee": []Application{
-		{
-			Id:          "eclipse-jee",
-			DisplayName: "Eclipse for Java and WebDev",
-			Status:      Available,
-			Version:     "2024-03",
-			source: appInstallationSource{
-				size:             545459269,
-				url:              "https://www.eclipse.org/downloads/download.php?file=/technology/epp/downloads/release/2024-03/R/eclipse-jee-2024-03-R-win32-x86_64.zip&r=1",
-				ignoreRootFolder: true,
-			}},
-	},
-	"eclipse-cpp": []Application{
-		{
-			Id:          "eclipse-cpp",
-			DisplayName: "Eclipse for C/C++ developer",
-			Status:      Available,
-			Version:     "2024-03",
-			source: appInstallationSource{
-				size:             0,
-				url:              "https://www.eclipse.org/downloads/download.php?file=/technology/epp/downloads/release/2024-03/R/eclipse-cpp-2024-03-R-win32-x86_64.zip&r=1",
-				ignoreRootFolder: true,
-			}},
-	},
-	"maven": []Application{
-		{
-			Id:          "maven",
-			DisplayName: "Apache Maven",
-			Status:      Available,
-			Version:     "3.9.6",
-			source: appInstallationSource{
-				size:             9513253,
-				url:              "https://dlcdn.apache.org/maven/maven-3/3.9.6/binaries/apache-maven-3.9.6-bin.zip",
-				ignoreRootFolder: true,
-				envVars: map[string]string{
-					"MAVEN_HOME": "{{.Path}}",
-				},
-			}},
-	},
-	"npp": []Application{
-		{
-			Id:          "npp",
-			DisplayName: "Notepad++",
-			Status:      Available,
-			Version:     "8.6.7",
-			source: appInstallationSource{
-				size: 5998909,
-				url:  "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v8.6.7/npp.8.6.7.portable.x64.zip",
-			}},
-	},
-	"python": []Application{
-		{
-			Id:          "python",
-			DisplayName: "Python",
-			Status:      Available,
-			Version:     "3.12",
-			source: appInstallationSource{
-				size: 0,
-				url:  "https://www.python.org/ftp/python/3.12.3/python-3.12.3-embed-amd64.zip",
-			}},
-		{
-			Id:          "python",
-			DisplayName: "Python",
-			Status:      Available,
-			Version:     "3.11",
-			source: appInstallationSource{
-				size: 0,
-				url:  "https://www.python.org/ftp/python/3.11.9/python-3.11.9-embed-amd64.zip",
-			}},
-		{
-			Id:          "python",
-			DisplayName: "Python",
-			Status:      Available,
-			Version:     "3.9",
-			source: appInstallationSource{
-				size: 0,
-				url:  "https://www.python.org/ftp/python/3.9.13/python-3.9.13-embed-amd64.zip",
-			}},
-	},
-}
-
-func ListAvailableApplications() map[string][]Application {
-	return available
-}
-
 func appPath(app Application) string {
 	appsInstallpath := config.GetString(CONFIG_KEY_APP_PATH)
 	return filepath.Join(appsInstallpath, app.Id, app.Version)
@@ -111,13 +25,11 @@ func UnInstall(newApp Application) error {
 	err := os.RemoveAll(appPath)
 	if err == nil {
 		newApp.Status = Available
-		localApps, err := getLocalApplications()
-		if err == nil {
-			localApps[newApp.Id] = query.RemoveElement(localApps[newApp.Id], func(a Application) bool {
-				return a.Id == newApp.Id && a.Version == newApp.Version && a.Status == Installed
-			})
-			config.Set(config.CONFIG_KEY_APPLICATIONS_INSTALLED, localApps)
-		}
+		localApps := localAppProvider.GetMapIndex()
+		localApps[newApp.Id] = query.RemoveElement(localApps[newApp.Id], func(a Application) bool {
+			return a.Id == newApp.Id && a.Version == newApp.Version && a.Status == Installed
+		})
+		config.Set(config.CONFIG_KEY_APPLICATIONS_INSTALLED, localApps)
 	}
 
 	return err
@@ -149,23 +61,23 @@ func Install(newApp Application) error {
 				if err == nil {
 					err = unzipSource(downloadFilePath, appPath, newApp.source.ignoreRootFolder)
 					if err == nil {
-						localApps, err := getLocalApplications()
-						if err == nil {
-							installedApp := newApp // copy our struct
-							installedApp.Path = appPath
-							installedApp.BinaryPath = findBinaryPath(appPath)
-							installedApp.Status = Installed
-							// copy envVars from source to application
-							installedApp.EnvVars = make(map[string]string)
-							if newApp.source.envVars != nil {
-								for varName, varValue := range newApp.source.envVars {
-									installedApp.EnvVars[varName] = templating.ProcessPlaceholders(varValue, installedApp)
-								}
-							}
+						localApps := localAppProvider.GetMapIndex()
 
-							localApps[installedApp.Id] = append(localApps[installedApp.Id], installedApp)
-							config.Set(config.CONFIG_KEY_APPLICATIONS_INSTALLED, localApps)
+						installedApp := newApp // copy our struct
+						installedApp.Path = appPath
+						installedApp.BinaryPath = findBinaryPath(appPath)
+						installedApp.Status = Installed
+						// copy envVars from source to application
+						installedApp.EnvVars = make(map[string]string)
+						if newApp.source.envVars != nil {
+							for varName, varValue := range newApp.source.envVars {
+								installedApp.EnvVars[varName] = templating.ProcessPlaceholders(varValue, installedApp)
+							}
 						}
+
+						localApps[installedApp.Id] = append(localApps[installedApp.Id], installedApp)
+						config.Set(config.CONFIG_KEY_APPLICATIONS_INSTALLED, localApps)
+
 					}
 				}
 			}

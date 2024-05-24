@@ -1,7 +1,7 @@
 package applications
 
 import (
-	"codeshell/config"
+	"codeshell/ext"
 	"codeshell/output"
 	"codeshell/query"
 	"codeshell/utils"
@@ -9,8 +9,6 @@ import (
 	"path/filepath"
 	"slices"
 	"strings"
-
-	"github.com/spf13/viper"
 )
 
 const CONFIG_KEY_APP_PATH = "local.paths.applications"
@@ -31,6 +29,12 @@ func (s Status) String() string {
 		return fmt.Sprintf("Status[%d]", int(s))
 	}
 	return statuses[s-1]
+}
+
+type ApplicationProvider interface {
+	//	ext.Provider[Application]
+	GetMapIndex() map[string][]Application
+	List() []Application
 }
 
 type appInstallationSource struct {
@@ -92,30 +96,40 @@ func FindById(identifier string) (Application, bool) {
 }
 
 func ListApplications() map[string][]Application {
+	return ListApplicationsFilteredBy(ext.MatchAll)
+}
+
+func ListApplicationsFilteredBy(matches ext.Predicate[Application]) map[string][]Application {
 	apps := make(map[string][]Application, 0)
-	available := ListAvailableApplications()
-	installed := ListInstalledAppications()
+	available := Providers[0].GetMapIndex()
+	installed := Providers[1].GetMapIndex()
 
 	// maps.Copy(apps, available)
 	// make a deep copy that also create new slices
 	for k, sli := range available {
 		tmp := make([]Application, 0, len(sli))
-		apps[k] = append(tmp, sli...)
+		for _, a := range sli {
+			if matches(a) {
+				apps[k] = append(tmp, sli...)
+			}
+		}
 	}
 
 	//	maps.Copy(apps, installed)
 	for key, val := range installed {
 		if versions, isMapContainsKey := apps[key]; isMapContainsKey {
 			for _, inst := range val {
-				j := slices.IndexFunc(versions, func(a Application) bool {
-					return a.Version == inst.Version
-				})
-				if j > -1 {
-					// override available entry with installed
-					versions[j] = inst
-				} else {
-					// just appendinstalled version // this should never happen
-					apps[key] = append(apps[key], inst)
+				if matches(inst) {
+					j := slices.IndexFunc(versions, func(a Application) bool {
+						return a.Version == inst.Version
+					})
+					if j > -1 {
+						// override available entry with installed
+						versions[j] = inst
+					} else {
+						// just appendinstalled version // this should never happen
+						apps[key] = append(apps[key], inst)
+					}
 				}
 			}
 		} else {
@@ -123,71 +137,6 @@ func ListApplications() map[string][]Application {
 		}
 	}
 	return apps
-}
-
-func getLocalApplications() (map[string][]Application, error) {
-	apps := make(map[string][]Application, 0)
-	err := viper.UnmarshalKey(config.CONFIG_KEY_APPLICATIONS_INSTALLED, &apps)
-	return apps, err
-}
-
-func ListInstalledAppications() map[string][]Application {
-	apps, err := getLocalApplications()
-	if err == nil {
-		return apps
-	} else {
-		panic(err)
-	}
-	// appspath := config.GetString(CONFIG_KEY_APP_PATH)
-	// entries, err := os.ReadDir(appspath)
-	// if err == nil {
-	// 	activated := getActivatedAppIds()
-	// 	result := make(map[string][]Application)
-	// 	for _, e := range entries {
-	// 		if e.IsDir() {
-	// 			id := e.Name()
-	// 			app_name := e.Name()
-	// 			app_path := filepath.Join(appspath, app_name)
-	// 			// list version
-	// 			versions, err := os.ReadDir(app_path)
-	// 			if err == nil {
-	// 				for _, v := range versions {
-	// 					if v.IsDir() {
-	// 						version := v.Name()
-	// 						id = id
-	// 						version_path := filepath.Join(app_path, version)
-	// 						bin_path := findBinaryPath(version_path)
-	// 						var status Status
-	// 						if slices.Contains(activated, id) {
-	// 							//TODO check for version as well
-	// 							status = Activated
-	// 						} else {
-	// 							status = Installed
-	// 						}
-
-	// 						result[id] = append(result[id], Application{Id: id, DisplayName: app_name, Version: version, Path: app_path, BinaryPath: bin_path, Status: status})
-	// 					}
-	// 				}
-	// 			} else {
-	// 				output.Errorln(err)
-	// 			}
-	// 		}
-	// 	}
-	// 	return result
-	// } else {
-	// 	return nil
-	// }
-}
-
-func FlattenMap(appMap map[string][]Application) []Application {
-	v := make([]Application, 0, len(appMap))
-
-	for _, values := range appMap {
-		for _, value := range values {
-			v = append(v, value)
-		}
-	}
-	return v
 }
 
 func findBinaryPath(app_path string) string {

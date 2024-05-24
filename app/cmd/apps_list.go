@@ -12,8 +12,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var showall bool
-
 // listCmd represents the list command
 var appsListCmd = &cobra.Command{
 	Use:   "list",
@@ -21,19 +19,16 @@ var appsListCmd = &cobra.Command{
 	Long:  `list all applications.`,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		allFlag := cmd.Flag("all")
-		if allFlag.Value.String() == "true" {
-			showall = true
-		} else {
-			showall = false
-		}
+		showall, _ := cmd.Flags().GetBool("all")
 
 		var apps []applications.Application
 
 		if showall {
+			fmt.Print("show all")
 			apps = applications.FlattenMap(applications.ListApplications())
 		} else {
-			apps = applications.FlattenMap(applications.ListInstalledAppications())
+			fmt.Print("show installed")
+			apps = applications.FlattenMap(applications.ListApplicationsFilteredBy(applications.IsInstalled))
 		}
 
 		if len(apps) > 0 {
@@ -51,5 +46,6 @@ var appsListCmd = &cobra.Command{
 func init() {
 	appsCmd.AddCommand(appsListCmd)
 
-	appsListCmd.Flags().BoolVarP(&showall, "all", "a", false, "show all application, available and installed")
+	appsListCmd.Flags().Bool("all", false, "show all application, available and installed")
+	// appsListCmd.Flags().BoolVarP(&showall, "all", "a", false, "show all application, available and installed")
 }

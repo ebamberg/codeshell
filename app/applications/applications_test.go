@@ -30,7 +30,7 @@ func TestListInstalledApplications(t *testing.T) {
 	appsdir := setupTestAppFolder()
 	defer teardownTestAppFolder(appsdir)
 
-	applicationsfound := ListInstalledAppications()
+	applicationsfound := ListApplicationsFilteredBy(IsInstalled)
 
 	assert.Equal(t, 2, len(applicationsfound))
 
@@ -42,7 +42,7 @@ func TestListInstalledAppications_have_correct_bin_folder(t *testing.T) {
 	appsdir := setupTestAppFolder()
 	defer teardownTestAppFolder(appsdir)
 
-	applicationsfound := ListInstalledAppications()
+	applicationsfound := ListApplicationsFilteredBy(IsInstalled)
 
 	assert.True(t, strings.HasSuffix(applicationsfound["test1"][0].BinaryPath, filepath.Join("0.0.1", "bin")))
 	assert.True(t, strings.HasSuffix(applicationsfound["test2"][0].BinaryPath, filepath.Join("test2", "0.0.1")))
@@ -53,7 +53,7 @@ func TestActivateApp(t *testing.T) {
 	appsdir := setupTestAppFolder()
 	defer teardownTestAppFolder(appsdir)
 
-	applicationsfound := ListInstalledAppications()
+	applicationsfound := ListApplicationsFilteredBy(IsInstalled)
 	applicationsfound["test1"][0].Activate()
 
 	assert.Contains(t, strings.Split(utils.GetEnvVariable(ENV_KEY_ACTIVACTED), ","), "test1")
@@ -64,7 +64,7 @@ func TestActivateApp_twice_doesnt_add_app_twice(t *testing.T) {
 	appsdir := setupTestAppFolder()
 	defer teardownTestAppFolder(appsdir)
 
-	applicationsfound := ListInstalledAppications()
+	applicationsfound := ListApplicationsFilteredBy(IsInstalled)
 	applicationsfound["test1"][0].Activate()
 	applicationsfound["test1"][0].Activate()
 	ac := strings.Split(utils.GetEnvVariable(ENV_KEY_ACTIVACTED), ",")
@@ -85,7 +85,7 @@ func TestListInstalledApplications_have_correct_status(t *testing.T) {
 	origActivated := utils.GetEnvVariable(ENV_KEY_ACTIVACTED)
 	utils.SetEnvVariable(ENV_KEY_ACTIVACTED, "test2,test3")
 	defer utils.SetEnvVariable(ENV_KEY_ACTIVACTED, origActivated)
-	applicationsfound := ListInstalledAppications()
+	applicationsfound := ListApplicationsFilteredBy(IsInstalled)
 
 	assert.Equal(t, Installed, applicationsfound["test1"][0].Status)
 	assert.Equal(t, Activated, applicationsfound["test2"][0].Status)
