@@ -53,13 +53,13 @@ func Install(newApp Application) error {
 			defer os.Remove(downloadFilePath)
 			defer out.Close()
 
-			resp, err := http.Get(newApp.source.url)
+			resp, err := http.Get(newApp.Source.Url)
 			if err == nil {
 				defer resp.Body.Close()
 				_, err = vfs.Copy(out, resp.Body)
 				//unzip file
 				if err == nil {
-					err = unzipSource(downloadFilePath, appPath, newApp.source.ignoreRootFolder)
+					err = unzipSource(downloadFilePath, appPath, newApp.Source.IgnoreRootFolder)
 					if err == nil {
 						localApps := localAppProvider.GetMapIndex()
 
@@ -69,8 +69,8 @@ func Install(newApp Application) error {
 						installedApp.Status = Installed
 						// copy envVars from source to application
 						installedApp.EnvVars = make(map[string]string)
-						if newApp.source.envVars != nil {
-							for varName, varValue := range newApp.source.envVars {
+						if newApp.Source.EnvVars != nil {
+							for varName, varValue := range newApp.Source.EnvVars {
 								installedApp.EnvVars[varName] = templating.ProcessPlaceholders(varValue, installedApp)
 							}
 						}

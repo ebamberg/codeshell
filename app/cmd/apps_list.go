@@ -24,10 +24,8 @@ var appsListCmd = &cobra.Command{
 		var apps []applications.Application
 
 		if showall {
-			fmt.Print("show all")
 			apps = applications.FlattenMap(applications.ListApplications())
 		} else {
-			fmt.Print("show installed")
 			apps = applications.FlattenMap(applications.ListApplicationsFilteredBy(applications.IsInstalled))
 		}
 

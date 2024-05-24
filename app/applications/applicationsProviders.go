@@ -3,6 +3,7 @@ package applications
 var localAppProvider = &LocalInstalledApplicationProvider{}
 
 var Providers = []ApplicationProvider{
+	// &HttpAvailableApplicationProvider{},
 	&InternalAvailableApplicationProvider{},
 	//	&LocalInstalledApplicationProvider{},
 	localAppProvider,

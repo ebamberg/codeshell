@@ -38,10 +38,10 @@ type ApplicationProvider interface {
 }
 
 type appInstallationSource struct {
-	url              string
-	size             int
-	ignoreRootFolder bool
-	envVars          map[string]string
+	Url              string
+	Size             int
+	IgnoreRootFolder bool
+	EnvVars          map[string]string
 }
 
 type Application struct {
@@ -51,8 +51,8 @@ type Application struct {
 	BinaryPath  string
 	Status      Status
 	Version     string
-	EnvVars     map[string]string `mapstructure:"envVars"`
-	source      appInstallationSource
+	EnvVars     map[string]string     `mapstructure:"envVars"`
+	Source      appInstallationSource `mapstructure:"source"`
 }
 
 func (this Application) Activate() {

@@ -1,0 +1,60 @@
+eclipse-cpp:
+    - id: eclipse-cpp
+      displayname: Eclipse for C/C++ developer
+      status: 1
+      version: 2024-03
+      source: 
+           size:             545459269
+           url:              "https://www.eclipse.org/downloads/download.php?file=/technology/epp/downloads/release/2024-03/R/eclipse-jee-2024-03-R-win32-x86_64.zip&r=1"
+           ignoreRootFolder: true
+eclipse-jee:
+    - id: eclipse-jee
+      displayname: Eclipse for Java and WebDev
+      status: 1
+      version: 2024-03
+      source:
+           size:             0
+           url:              "https://www.eclipse.org/downloads/download.php?file=/technology/epp/downloads/release/2024-03/R/eclipse-cpp-2024-03-R-win32-x86_64.zip&r=1"
+           ignoreRootFolder: true
+maven:
+    - id: maven
+      displayname: Apache Maven
+      status: 1
+      version: 3.9.6
+      source:
+            size:             9513253
+            url:              "https://dlcdn.apache.org/maven/maven-3/3.9.6/binaries/apache-maven-3.9.6-bin.zip"
+            ignoreRootFolder: true
+            envVars: 
+               "MAVEN_HOME": "{{.Path}}"
+npp:
+    - id: npp
+      displayname: Notepad++
+      status: 1
+      version: 8.6.7
+      source: 
+            size: 5998909
+            url:  "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v8.6.7/npp.8.6.7.portable.x64.zip"
+python:
+    - id: python
+      displayname: Python
+      status: 1
+      version: "3.12"
+      source: 
+            size: 0
+            url:  "https://www.python.org/ftp/python/3.12.3/python-3.12.3-embed-amd64.zip"
+    - id: python
+      displayname: Python
+      status: 1
+      version: "3.11"
+      source: 
+         size: 0
+         url:  "https://www.python.org/ftp/python/3.11.9/python-3.11.9-embed-amd64.zip"
+    - id: python
+      displayname: Python
+      status: 1
+      version: "3.9"
+      source:
+         size: 0
+         url:  "https://www.python.org/ftp/python/3.9.13/python-3.9.13-embed-amd64.zip"
+
