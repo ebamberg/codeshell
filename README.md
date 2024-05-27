@@ -64,5 +64,48 @@ apps uninstall maven
 
 ## activating a profile
 
+After installation an application is not __activated__.
 
+To activate an application we have to add it to a profile in the config.yaml file.
+
+We can define multiple different profiles in the configuration file each containing
+a different set of application.
+By activating a profile we are activating all applications defined in the profile.
+
+An activated application is add the PATH of your OS (for the current shell) and necessary
+configurations like setting environment variables is done. The activation is just valid as long
+as the profile is activated. We can switch over to another profile at any time activating a different
+set of applications
+
+```shell
+profile activate default
+```
+
+To list configured profiles we can use
+```shell
+profiles list 
+```
+
+### example profile configuration
+```yaml
+profiles:
+    default:
+        applications:
+            - npp:8.6.7
+            - maven:3.9.6
+            - eclipse-jee:2024-03
+        autoinstallapps: "true"
+        displayname: default
+        envvars:
+            foobar: foobar
+            hello: "world"
+            test_cs_string: hello world!
+        id: default
+    ml:
+        applications:
+            - python:3.12
+        autoinstallapps: "true"
+        displayname: MachineLearning
+        id: ml
+```
 
