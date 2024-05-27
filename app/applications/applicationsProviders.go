@@ -1,12 +1,40 @@
 package applications
 
-var localAppProvider = &LocalInstalledApplicationProvider{}
+import (
+	"codeshell/config"
+	"codeshell/vfs"
+)
 
-var Providers = []ApplicationProvider{
-	// &HttpAvailableApplicationProvider{},
-	&InternalAvailableApplicationProvider{},
-	//	&LocalInstalledApplicationProvider{},
-	localAppProvider,
+var localAppProvider ApplicationProvider
+
+var Providers []ApplicationProvider
+
+//{
+// &HttpAvailableApplicationProvider{},
+//	&InternalAvailableApplicationProvider{},
+//	&LocalInstalledApplicationProvider{},
+//	localAppProvider,
+//}
+
+func init() {
+	Providers = make([]ApplicationProvider, 0, 2)
+	repo_url := config.GetString(config.CONFIG_KEY_REPO_APP_URL)
+	var availableProvider ApplicationProvider
+	if repo_url != "" {
+		repo_fs, err := vfs.FromUrlString(repo_url)
+		if err == nil {
+			availableProvider = &HttpAvailableApplicationProvider{repo: repo_fs}
+
+		} else {
+			panic(err)
+		}
+	} else {
+		availableProvider = &InternalAvailableApplicationProvider{}
+	}
+	Providers = append(Providers, availableProvider)
+	localAppProvider = &LocalInstalledApplicationProvider{}
+	Providers = append(Providers, localAppProvider)
+
 }
 
 // ************************ Often used Predicated ********************

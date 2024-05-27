@@ -1,11 +1,9 @@
 package vfs
 
 import (
+	"errors"
 	"io"
-	"io/fs"
-	"os"
-	"path/filepath"
-	"strings"
+	"net/url"
 )
 
 type VFSEntry struct {
@@ -38,51 +36,24 @@ type ClosableWriter struct {
 var DefaultFilesystem VFS
 
 func init() {
-	DefaultFilesystem = LocalVFS{}
+	DefaultFilesystem = &LocalVFS{}
 }
 
-type LocalVFS struct {
+func FromUrlString(urlString string) (VFS, error) {
+	base_url, err := url.Parse(urlString)
+	if err == nil {
+		return FromUrl(base_url)
+	} else {
+		return &LocalVFS{}, err
+	}
 }
 
-func (this LocalVFS) Identifier() string {
-	return "local-filesystem"
-}
+func FromUrl(base_url *url.URL) (VFS, error) {
+	if base_url.Scheme == "http" || base_url.Scheme == "https" {
+		return FromHttpVFSUrl(base_url)
+	} else if base_url.Scheme == "file" {
+		return FromUrlLocalFile(base_url)
+	}
 
-func (this LocalVFS) Create(path string) (io.WriteCloser, error) {
-	out, err := os.Create(path)
-	return out, err
-}
-func (this LocalVFS) Read(path string) (io.ReadCloser, error) {
-	in, err := os.Open(path)
-	return in, err
-}
-
-func (this LocalVFS) Chdir(path string) error {
-	return os.Chdir(path)
-}
-func (this LocalVFS) Getwd() (string, error) {
-	return os.Getwd()
-}
-
-func (this LocalVFS) List(path string, maxDepth int) []VFSEntry {
-	var result = make([]VFSEntry, 0)
-	this.Walk(path, maxDepth, func(entry VFSEntry) {
-		result = append(result, entry)
-	})
-	return result
-}
-
-func (this LocalVFS) Walk(path string, maxDepth int, callback func(entry VFSEntry)) error {
-	return filepath.WalkDir(path, func(path string, info os.DirEntry, err error) error {
-		if err != nil {
-			return err
-		}
-		if strings.Count(path, string(os.PathSeparator)) > maxDepth {
-			return fs.SkipDir
-		}
-
-		entry := VFSEntry{info.IsDir(), info.Name(), path, nil}
-		callback(entry)
-		return nil
-	})
+	return &LocalVFS{}, errors.New("unsupported url-scheme. scheme is " + base_url.Scheme)
 }

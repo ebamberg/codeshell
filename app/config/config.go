@@ -9,14 +9,18 @@ import (
 )
 
 const CONFIG_KEY_APP_PATH = "local.paths.applications"
+const CONFIG_KEY_REPO_APP_URL = "repositories.applications.url"
 
 var defaults = map[string]string{
 	"local.paths.applications":         "./apps/",
+	CONFIG_KEY_REPO_APP_URL:            "https://ebamberg.github.io/codeshell/repository/",
 	"terminal.style.title":             "Codeshell",
 	"profiles.default.id":              "default",
 	"profiles.default.displayname":     "default",
 	"profiles.default.autoInstallApps": "true",
 }
+
+var CfgFile string
 
 func setDefaults() {
 	for key, val := range defaults {
@@ -89,5 +93,14 @@ func persist() {
 	err := viper.WriteConfigAs(viper.ConfigFileUsed())
 	if err != nil {
 		fmt.Println(err)
+	}
+}
+
+func init() {
+	if CfgFile != "" {
+		// Use config file from the flag.
+		Init(CfgFile)
+	} else {
+		Init()
 	}
 }
