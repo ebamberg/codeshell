@@ -20,8 +20,6 @@ var defaults = map[string]string{
 	"profiles.default.autoInstallApps": "true",
 }
 
-var CfgFile string
-
 func setDefaults() {
 	for key, val := range defaults {
 		viper.SetDefault(key, val)
@@ -93,14 +91,5 @@ func persist() {
 	err := viper.WriteConfigAs(viper.ConfigFileUsed())
 	if err != nil {
 		fmt.Println(err)
-	}
-}
-
-func init() {
-	if CfgFile != "" {
-		// Use config file from the flag.
-		Init(CfgFile)
-	} else {
-		Init()
 	}
 }

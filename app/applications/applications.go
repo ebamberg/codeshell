@@ -101,8 +101,9 @@ func ListApplications() map[string][]Application {
 
 func ListApplicationsFilteredBy(matches ext.Predicate[Application]) map[string][]Application {
 	apps := make(map[string][]Application, 0)
-	available := Providers[0].GetMapIndex()
-	installed := Providers[1].GetMapIndex()
+	providers := GetProviders()
+	available := providers[0].GetMapIndex()
+	installed := providers[1].GetMapIndex()
 
 	// maps.Copy(apps, available)
 	// make a deep copy that also create new slices

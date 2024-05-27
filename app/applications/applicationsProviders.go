@@ -7,7 +7,7 @@ import (
 
 var localAppProvider ApplicationProvider
 
-var Providers []ApplicationProvider
+var providers []ApplicationProvider
 
 //{
 // &HttpAvailableApplicationProvider{},
@@ -16,8 +16,15 @@ var Providers []ApplicationProvider
 //	localAppProvider,
 //}
 
-func init() {
-	Providers = make([]ApplicationProvider, 0, 2)
+func GetProviders() []ApplicationProvider {
+	if providers == nil {
+		initProviders()
+	}
+	return providers
+}
+
+func initProviders() {
+	providers = make([]ApplicationProvider, 0, 2)
 	repo_url := config.GetString(config.CONFIG_KEY_REPO_APP_URL)
 	var availableProvider ApplicationProvider
 	if repo_url != "" {
@@ -31,9 +38,9 @@ func init() {
 	} else {
 		availableProvider = &InternalAvailableApplicationProvider{}
 	}
-	Providers = append(Providers, availableProvider)
+	providers = append(providers, availableProvider)
 	localAppProvider = &LocalInstalledApplicationProvider{}
-	Providers = append(Providers, localAppProvider)
+	providers = append(providers, localAppProvider)
 
 }
 

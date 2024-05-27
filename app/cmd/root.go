@@ -23,6 +23,8 @@ import (
 	"github.com/spf13/pflag"
 )
 
+var cfgFile string
+
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "",
@@ -58,7 +60,18 @@ func Execute() {
 func init() {
 	//	cobra.OnInitialize(initConfig)
 
-	rootCmd.PersistentFlags().StringVar(&config.CfgFile, "config", "", "config file (default is $HOME/codeshell.config)")
+	initConfig()
+
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/codeshell.config)")
 
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+}
+
+func initConfig() {
+	if cfgFile != "" {
+		// Use config file from the flag.
+		config.Init(cfgFile)
+	} else {
+		config.Init()
+	}
 }
