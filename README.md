@@ -109,3 +109,72 @@ profiles:
         id: ml
 ```
 
+# the Configuration file
+
+```yaml
+applications:
+    installed:                              # list of installed applications
+        eclipse-jee:
+            - id: eclipse-jee
+              displayname: Eclipse for Java and WebDev
+              path: c:\dev\codeshell\apps\eclipse-jee\2024-03
+              binarypath: c:\dev\codeshell\apps\eclipse-jee\2024-03
+              status: 2
+              version: 2024-03
+              envvars: {}
+        maven:
+            - id: maven
+              displayname: Apache Maven
+              path: c:\dev\codeshell\apps\maven\3.9.6
+              binarypath: c:\dev\codeshell\apps\maven\3.9.6
+              status: 2
+              version: 3.9.6
+              envvars: {}
+        npp:
+            - id: npp
+              displayname: Notepad++
+              path: c:\dev\codeshell\apps\npp\8.6.7
+              binarypath: c:\dev\codeshell\apps\npp\8.6.7
+              status: 2
+              version: 8.6.7
+              envvars: {}
+        python:
+            - id: python
+              displayname: Python
+              path: c:\dev\codeshell\apps\python\3.12
+              binarypath: c:\dev\codeshell\apps\python\3.12
+              status: 2
+              version: "3.12"
+              envvars: {}
+local:
+    paths:
+        applications: c:\dev\codeshell\apps     # path where the application are downloaded and installed
+profiles:
+    default:                                    # profile with id="default"
+        applications:                           # list of application assigned to this profiles. when activating this profiles. this apps are activated
+            - npp:8.6.7
+            - maven:3.9.6
+            - eclipse-jee:2024-03
+        autoinstallapps: "true"                 # when "true" the codeshell automatically installs apps of the profile if the are not already installed
+        displayname: default
+        envvars:                                # profile related env variable that are set. each application has it's own envvars section for application specific envvars     
+            test_cs_2: foobar
+            test_cs_3: "123"
+            test_cs_string: hello world!
+        id: default
+    ml:                                         # profile with id="ml"
+        applications:
+            - python:3.12
+        autoinstallapps: "true"
+        displayname: MachineLearning
+        id: ml
+repositories:
+    applications:
+        test_url: file://C:/dev/src/codeshell/docs/repository/
+        url: https://ebamberg.github.io/codeshell/repository/   # https server to look up available applications. under the address we expect an applications.yaml file with information where to download and how to run an application
+terminal:
+    style:
+        title: Codeshell                        # the title bar when starting codeshell.
+
+```
+
