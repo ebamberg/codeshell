@@ -170,7 +170,6 @@ profiles:
         id: ml
 repositories:
     applications:
-        test_url: file://C:/dev/src/codeshell/docs/repository/
         url: https://ebamberg.github.io/codeshell/repository/   # https server to look up available applications. under the address we expect an applications.yaml file with information where to download and how to run an application
 terminal:
     style:

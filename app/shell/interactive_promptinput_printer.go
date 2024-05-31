@@ -15,7 +15,7 @@ import (
 
 // DefaultInteractiveTextInput is the default InteractiveTextInput printer.
 var DefaultInteractivePromptInput = InteractiveTextPromptPrinter{
-	DefaultText: "codeshell",
+	DefaultText: "shell",
 	Delimiter:   ": ",
 	TextStyle:   &pterm.ThemeDefault.PrimaryStyle,
 	Mask:        "",

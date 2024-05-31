@@ -18,6 +18,8 @@ type Profile struct {
 	AutoInstallApps bool              `mapstructure:"autoInstallApps"`
 }
 
+var CurrentProfile *Profile
+
 func getAllProfiles() (map[string]Profile, error) {
 	var profiles = make(map[string]Profile)
 	err := viper.UnmarshalKey(config.CONFIG_KEY_PROFILES, &profiles)
@@ -57,6 +59,7 @@ func ActivateProfile(id string) bool {
 		setEnvVariables(profile.EnvVars)
 
 		ActivateApps(profile.Applications, profile.AutoInstallApps)
+		CurrentProfile = &profile
 		return true
 	} else {
 		output.Errorf("profile [%s] not found", id)

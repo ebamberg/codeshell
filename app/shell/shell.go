@@ -3,12 +3,16 @@ package shell
 import (
 	"codeshell/config"
 	"codeshell/output"
+	"codeshell/profiles"
+	"codeshell/style"
+	"codeshell/vfs"
 	"os/exec"
 	"slices"
 	"strings"
 
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 )
 
 var cobraRootCmd *cobra.Command
@@ -18,12 +22,12 @@ func Run(rootCmd *cobra.Command) {
 	printWelcomeMessage()
 	// Create an interactive text input with single line input mode and show it
 
-	inputPrompt := DefaultInteractivePromptInput.WithTextStyle(&pterm.ThemeDefault.PrimaryStyle)
+	inputPrompt := DefaultInteractivePromptInput.WithTextStyle(pterm.NewStyle(pterm.FgRed))
 	// .WithOnInterruptFunc(func() {
 	//	os.Exit(0)
 	// })
 	for {
-		result, _ := inputPrompt.Show()
+		result, _ := inputPrompt.Show(prompt())
 		if result == "quit" || result == "exit" {
 			break
 		}
@@ -33,6 +37,17 @@ func Run(rootCmd *cobra.Command) {
 		// Print the user's answer with an info prefix
 		//	pterm.Info.Printfln(": %s", result)
 	}
+}
+
+func prompt() string {
+	var prompt []string
+	workdir, _ := vfs.DefaultFilesystem.Getwd()
+	profile := profiles.CurrentProfile
+	if profile != nil {
+		prompt = append(prompt, style.Profile(" "+profile.Displayname+" "))
+	}
+	prompt = append(prompt, style.Prompt(workdir))
+	return strings.Join(prompt, " ")
 }
 
 func printWelcomeMessage() {
@@ -77,6 +92,7 @@ func execute(prompt string) {
 			//			}
 
 		}
+		resetSubCommandFlagValues(cobraRootCmd)
 		output.Println("")
 	} else {
 		exe := cmdArgs[0]
@@ -101,4 +117,16 @@ func isInternalCommand(args []string) bool {
 			return slices.Contains(cmd.Aliases, args[0])
 		}
 	})
+}
+
+func resetSubCommandFlagValues(root *cobra.Command) {
+	for _, c := range root.Commands() {
+		c.Flags().VisitAll(func(f *pflag.Flag) {
+			if f.Changed {
+				f.Value.Set(f.DefValue)
+				f.Changed = false
+			}
+		})
+		resetSubCommandFlagValues(c)
+	}
 }
