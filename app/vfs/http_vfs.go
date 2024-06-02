@@ -66,6 +66,10 @@ func (this *HttpVFS) Exists(path string) bool {
 	return false
 }
 
+func (this *HttpVFS) Delete(path string) error {
+	return errors.New("function Delete not yet supported for HTTP based filesystems")
+}
+
 func (this *HttpVFS) List(path string, maxDepth int) []VFSEntry {
 	return make([]VFSEntry, 0)
 }

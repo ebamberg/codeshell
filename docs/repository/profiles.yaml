@@ -5,7 +5,15 @@ java17:
         - maven:3.9.6
         - eclipse-jee:2024-03
   autoinstallapps: true
-  displayname: default
+  displayname: "Java 17"
+java22:
+  id: java12
+  applications:
+        - java:22
+        - maven:3.9.6
+        - eclipse-jee:2024-03
+  autoinstallapps: true
+  displayname: "Java 22"
 ml:
   id: ml
   CheckVirtualEnv: true

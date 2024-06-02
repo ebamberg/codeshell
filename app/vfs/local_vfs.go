@@ -63,6 +63,10 @@ func (this *LocalVFS) Exists(path string) bool {
 	}
 }
 
+func (this *LocalVFS) Delete(path string) error {
+	return os.Remove(path)
+}
+
 func (this *LocalVFS) List(path string, maxDepth int) []VFSEntry {
 	var result = make([]VFSEntry, 0)
 	this.Walk(path, maxDepth, func(entry VFSEntry) {

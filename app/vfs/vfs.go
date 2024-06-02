@@ -22,6 +22,7 @@ type VFS interface {
 	Create(path string) (io.WriteCloser, error)
 	Read(path string) (io.ReadCloser, error)
 	Exists(path string) bool
+	Delete(path string) error
 }
 
 type ClosableReader struct {

@@ -6,7 +6,6 @@ import (
 	"codeshell/templating"
 	"codeshell/vfs"
 	"errors"
-	"fmt"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -38,7 +37,6 @@ func UnInstall(newApp Application) error {
 
 func Install(newApp Application) error {
 
-	fmt.Println(newApp)
 	appPath := appPath(newApp)
 
 	err := os.MkdirAll(appPath, 0)
