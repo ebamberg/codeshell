@@ -7,7 +7,7 @@ java:
            size:             0
            url:              "https://download.oracle.com/java/22/latest/jdk-22_windows-x64_bin.zip"
            ignoreRootFolder: true
-      envVars: 
+           envVars: 
                "JAVA_HOME": "{{.Path}}"
     - id: java
       displayname: Java JDK (Oracle)
@@ -17,7 +17,7 @@ java:
            size:             0
            url:              "https://download.oracle.com/java/17/latest/jdk-17_windows-x64_bin.zip"
            ignoreRootFolder: true
-      envVars: 
+           envVars: 
                "JAVA_HOME": "{{.Path}}"
 eclipse-cpp:
     - id: eclipse-cpp
