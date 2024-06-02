@@ -56,6 +56,11 @@ func Install(newApp Application) error {
 			resp, err := http.Get(newApp.Source.Url)
 			if err == nil {
 				defer resp.Body.Close()
+				var contentLength = 0
+				clength := resp.Header.Get("Content-Length")
+				if clength != "" {
+					contentLength = int(contentLength)
+				}
 				_, err = vfs.Copy(out, resp.Body)
 				//unzip file
 				if err == nil {

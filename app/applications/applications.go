@@ -41,8 +41,8 @@ type ApplicationProvider interface {
 type appInstallationSource struct {
 	Url              string
 	Size             int
-	IgnoreRootFolder bool
-	EnvVars          map[string]string
+	IgnoreRootFolder bool              `mapstructure:"IgnoreRootFolder"`
+	EnvVars          map[string]string `mapstructure:"envVars"`
 }
 
 type Application struct {

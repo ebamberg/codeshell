@@ -45,8 +45,8 @@ maven:
       source:
             size:             9513253
             url:              "https://dlcdn.apache.org/maven/maven-3/3.9.6/binaries/apache-maven-3.9.6-bin.zip"
-            ignoreRootFolder: true
-            envVars: 
+            ignorerootfolder: true
+            envvars: 
                "MAVEN_HOME": "{{.Path}}"
 npp:
     - id: npp
