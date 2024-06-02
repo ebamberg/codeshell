@@ -6,8 +6,8 @@ java:
       source: 
            size:             0
            url:              "https://download.oracle.com/java/22/latest/jdk-22_windows-x64_bin.zip"
-           ignoreRootFolder: true
-           envVars: 
+           ignorerootdolder: true
+           envvars: 
                "JAVA_HOME": "{{.Path}}"
     - id: java
       displayname: Java JDK (Oracle)
@@ -16,8 +16,8 @@ java:
       source: 
            size:             0
            url:              "https://download.oracle.com/java/17/latest/jdk-17_windows-x64_bin.zip"
-           ignoreRootFolder: true
-           envVars: 
+           ignorerootfolder: true
+           envvars: 
                "JAVA_HOME": "{{.Path}}"
 eclipse-cpp:
     - id: eclipse-cpp
@@ -27,7 +27,7 @@ eclipse-cpp:
       source: 
            size:             545459269
            url:              "https://www.eclipse.org/downloads/download.php?file=/technology/epp/downloads/release/2024-03/R/eclipse-jee-2024-03-R-win32-x86_64.zip&r=1"
-           ignoreRootFolder: true
+           ignorerootfolder: true
 eclipse-jee:
     - id: eclipse-jee
       displayname: Eclipse for Java and WebDev
@@ -36,7 +36,7 @@ eclipse-jee:
       source:
            size:             0
            url:              "https://www.eclipse.org/downloads/download.php?file=/technology/epp/downloads/release/2024-03/R/eclipse-cpp-2024-03-R-win32-x86_64.zip&r=1"
-           ignoreRootFolder: true
+           ignorerootfolder: true
 maven:
     - id: maven
       displayname: Apache Maven
