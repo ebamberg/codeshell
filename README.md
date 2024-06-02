@@ -176,4 +176,48 @@ terminal:
         title: Codeshell                        # the title bar when starting codeshell.
 
 ```
+# Profiles
 
+Profiles defines a set of applications at a particular version and configuration that can be activated at once.
+
+This allows working on different projects with uses different version of the same development tools by switching between profiles.
+for example we can define  a profiles that uses java17, Node18 and Maven 3.9 and another profiles with java8,Node16 and Maven 3.8.
+
+By switching between the profiles we can change required ENV-Variables and add the correct Version if the tooling to the PATH.
+
+
+
+## Remote Repository Profiles
+We can define Profiles in a remote repository (HTTP server) which can act like a centralized Profile repository enterprise-width.
+
+Developer can then import profiles from this enterprise-width repository into their local installation.
+
+to pull a profile definition from the remote repository and install it locally you can use
+```shell
+profile install java17
+```
+
+example profile file
+```yaml
+java17:
+  id: java17
+  applications:
+        - java:17
+        - maven:3.9.6
+        - eclipse-jee:2024-03
+  autoinstallapps: true
+  displayname: default
+ml:
+  id: ml
+  CheckVirtualEnv: true
+  applications:
+        - python:3.12
+  autoinstallapps: true
+  displayname: MachineLearning
+        
+```
+the profile definition file must be accessible with the name "profiles.yaml" for example
+https://ebamberg.github.io/codeshell/repository/profiles.yaml
+
+## Default repository
+default repository is https://ebamberg.github.io/codeshell/repository/
