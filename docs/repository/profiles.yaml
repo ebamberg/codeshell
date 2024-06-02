@@ -4,13 +4,13 @@ java17:
         - java:17
         - maven:3.9.6
         - eclipse-jee:2024-03
-  autoinstallapps: "true"
+  autoinstallapps: true
   displayname: default
 ml:
   id: ml
   CheckVirtualEnv: true
   applications:
         - python:3.12
-  autoinstallapps: "true"
+  autoinstallapps: true
   displayname: MachineLearning
         

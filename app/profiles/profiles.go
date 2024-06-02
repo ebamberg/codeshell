@@ -104,8 +104,14 @@ func Import(id string) error {
 						} else {
 							return errors.New("profile already exits locally")
 						}
+					} else {
+						return err
 					}
+				} else {
+					return err
 				}
+			} else {
+				return err
 			}
 		}
 	} else {
