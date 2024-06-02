@@ -3,16 +3,23 @@ package profiles
 import (
 	"codeshell/applications"
 	"codeshell/config"
+	"codeshell/events"
 	"codeshell/output"
 	"codeshell/utils"
+	"codeshell/vfs"
+	"errors"
 	"fmt"
+	"io/ioutil"
 
 	"github.com/spf13/viper"
+
+	"gopkg.in/yaml.v3"
 )
 
 type Profile struct {
 	Id              string
 	Displayname     string            `mapstructure:"displayName"`
+	CheckVirtualEnv bool              `mapstructure:"checkVirtualEnv"`
 	EnvVars         map[string]string `mapstructure:"envVars"`
 	Applications    []string          `mapstructure:"applications"`
 	AutoInstallApps bool              `mapstructure:"autoInstallApps"`
@@ -60,10 +67,54 @@ func ActivateProfile(id string) bool {
 
 		ActivateApps(profile.Applications, profile.AutoInstallApps)
 		CurrentProfile = &profile
+		events.Broadcast(events.ApplicationEvent{Eventtype: events.PROFILE_ACTIVATED, Payload: profile})
 		return true
 	} else {
 		output.Errorf("profile [%s] not found", id)
 		return false
+	}
+}
+
+func Import(id string) error {
+	imp := make(map[string]Profile, 0)
+	repo, err := findRepo()
+	if err != nil {
+		return err
+	}
+	if repo != nil {
+		file, err := repo.Read("profiles.yaml")
+		if err == nil {
+			defer file.Close()
+			buf, err := ioutil.ReadAll(file)
+
+			if err == nil {
+				err = yaml.Unmarshal(buf, &imp)
+				profiles, err := getAllProfiles()
+				if err == nil {
+					if _, exists := profiles[id]; !exists {
+						if newProfile, exists := imp[id]; exists {
+							profiles[id] = newProfile
+							config.Set(config.CONFIG_KEY_PROFILES, profiles)
+						} else {
+							return errors.New("profile not found in repository")
+						}
+					}
+				}
+			}
+		}
+	} else {
+		err = errors.New("no repository configured")
+	}
+	return err
+
+}
+
+func findRepo() (vfs.VFS, error) {
+	repo_url := config.GetString(config.CONFIG_KEY_REPO_APP_URL)
+	if repo_url != "" {
+		return vfs.FromUrlString(repo_url)
+	} else {
+		return nil, nil
 	}
 }
 

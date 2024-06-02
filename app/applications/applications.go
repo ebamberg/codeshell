@@ -1,6 +1,7 @@
 package applications
 
 import (
+	"codeshell/events"
 	"codeshell/ext"
 	"codeshell/output"
 	"codeshell/query"
@@ -63,6 +64,7 @@ func (this Application) Activate() {
 		utils.SetEnvVariable(ENV_KEY_ACTIVACTED, strings.Join(activated, ","))
 	}
 	setEnvVariables(this.EnvVars)
+	events.Broadcast(events.ApplicationEvent{Eventtype: events.APPLICATION_ACTIVATED, Payload: this})
 	output.Infof("activated : \t%s\t\t%s\n", this.DisplayName, this.Path)
 
 }

@@ -1,6 +1,7 @@
 package vfs
 
 import (
+	"codeshell/output"
 	"errors"
 	"io"
 	"net/http"
@@ -58,6 +59,11 @@ func (this *HttpVFS) Chdir(path string) error {
 }
 func (this *HttpVFS) Getwd() (string, error) {
 	return this.currentPath.String(), nil
+}
+
+func (this *HttpVFS) Exists(path string) bool {
+	output.Errorln("fucntion Exists not yet supported for HTTP based filesystems")
+	return false
 }
 
 func (this *HttpVFS) List(path string, maxDepth int) []VFSEntry {

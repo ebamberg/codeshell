@@ -4,6 +4,7 @@ Copyright © 2024 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"codeshell/events"
 	"codeshell/output"
 	"codeshell/vfs"
 
@@ -22,7 +23,7 @@ var cdCmd = &cobra.Command{
 			if err != nil {
 				output.Errorln(err)
 			}
-
+			events.Broadcast(events.ApplicationEvent{events.FS_WORKDIR_CHANGED, path})
 		} else {
 			output.Errorln("please pass path the new working directory.")
 			output.Infoln(cmd.UsageString())
@@ -32,14 +33,4 @@ var cdCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(cdCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// cdCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// cdCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

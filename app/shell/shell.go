@@ -6,6 +6,7 @@ import (
 	"codeshell/profiles"
 	"codeshell/style"
 	"codeshell/vfs"
+	"os"
 	"os/exec"
 	"slices"
 	"strings"
@@ -46,6 +47,11 @@ func prompt() string {
 	if profile != nil {
 		prompt = append(prompt, style.Profile(" "+profile.Displayname+" "))
 	}
+	venv := os.Getenv("VIRTUAL_ENV")
+	if venv != "" {
+		prompt = append(prompt, style.PythonVenv(" "+venv+" "))
+	}
+
 	prompt = append(prompt, style.Prompt(workdir))
 	return strings.Join(prompt, " ")
 }

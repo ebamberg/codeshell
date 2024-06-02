@@ -1,0 +1,16 @@
+java17:
+  - id: java17
+    applications:
+        - java:17
+        - maven:3.9.6
+        - eclipse-jee:2024-03
+    autoinstallapps: "true"
+    displayname: default
+ml:
+  - id: ml
+    CheckVirtualEnv: true
+    applications:
+        - python:3.12
+    autoinstallapps: "true"
+    displayname: MachineLearning
+        

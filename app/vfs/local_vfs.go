@@ -51,6 +51,18 @@ func (this *LocalVFS) Getwd() (string, error) {
 	return os.Getwd()
 }
 
+func (this *LocalVFS) Exists(path string) bool {
+	_, err := os.Stat(path)
+	if err == nil {
+		return true
+	}
+	if os.IsNotExist(err) {
+		return false
+	} else {
+		return true
+	}
+}
+
 func (this *LocalVFS) List(path string, maxDepth int) []VFSEntry {
 	var result = make([]VFSEntry, 0)
 	this.Walk(path, maxDepth, func(entry VFSEntry) {

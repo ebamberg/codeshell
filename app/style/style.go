@@ -18,6 +18,10 @@ func Profile(displayname string) string {
 	return pterm.BgLightRed.Sprint(displayname)
 }
 
+func PythonVenv(displayname string) string {
+	return pterm.BgLightBlue.Sprint(displayname)
+}
+
 func AppStatus(s applications.Status) string {
 	switch s {
 	case applications.Available:
