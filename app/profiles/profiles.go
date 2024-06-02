@@ -89,14 +89,20 @@ func Import(id string) error {
 
 			if err == nil {
 				err = yaml.Unmarshal(buf, &imp)
-				profiles, err := getAllProfiles()
 				if err == nil {
-					if _, exists := profiles[id]; !exists {
-						if newProfile, exists := imp[id]; exists {
-							profiles[id] = newProfile
-							config.Set(config.CONFIG_KEY_PROFILES, profiles)
+					profiles, err := getAllProfiles()
+					if err == nil {
+						if _, exists := profiles[id]; !exists {
+
+							if newProfile, exists := imp[id]; exists {
+								profiles[id] = newProfile
+								config.Set(config.CONFIG_KEY_PROFILES, profiles)
+								return nil
+							} else {
+								return errors.New("profile not found in repository")
+							}
 						} else {
-							return errors.New("profile not found in repository")
+							return errors.New("profile already exits locally")
 						}
 					}
 				}
