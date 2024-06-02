@@ -10,12 +10,18 @@ func Copy(dst io.Writer, src io.Reader) (written int64, err error) {
 	progress := output.NewProgressIndicator("please wait...")
 	defer progress.Stop()
 	progress.Start()
-	return copyBuffer(dst, src, nil)
+	return copyBuffer(dst, src, nil, progress)
+}
+
+func CopyWithIndicator(dst io.Writer, src io.Reader, progress output.ProgressIndicator) (written int64, err error) {
+	defer progress.Stop()
+	progress.Start()
+	return copyBuffer(dst, src, nil, progress)
 }
 
 // copyBuffer is the actual implementation of Copy and CopyBuffer.
 // if buf is nil, one is allocated.
-func copyBuffer(dst io.Writer, src io.Reader, buf []byte) (written int64, err error) {
+func copyBuffer(dst io.Writer, src io.Reader, buf []byte, progress output.ProgressIndicator) (written int64, err error) {
 	// If the reader has a WriteTo method, use it to do the copy.
 	// Avoids an allocation and a copy.
 	if wt, ok := src.(io.WriterTo); ok {
@@ -46,6 +52,7 @@ func copyBuffer(dst io.Writer, src io.Reader, buf []byte) (written int64, err er
 					ew = errors.New("invalid write result")
 				}
 			}
+			progress.IncreaseBy(nw)
 			written += int64(nw)
 			if ew != nil {
 				err = ew
@@ -55,6 +62,7 @@ func copyBuffer(dst io.Writer, src io.Reader, buf []byte) (written int64, err er
 				err = io.ErrShortWrite
 				break
 			}
+
 		}
 		if er != nil {
 			if er != io.EOF {

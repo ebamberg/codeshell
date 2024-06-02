@@ -6,7 +6,7 @@ java:
       source: 
            size:             0
            url:              "https://download.oracle.com/java/22/latest/jdk-22_windows-x64_bin.zip"
-           ignorerootdolder: true
+           ignorerootfolder: true
            envvars: 
                "JAVA_HOME": "{{.Path}}"
     - id: java

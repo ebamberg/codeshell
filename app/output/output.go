@@ -14,6 +14,7 @@ type ProgressIndicator interface {
 	Start() ProgressIndicator
 	Stop() ProgressIndicator
 	Increase() ProgressIndicator
+	IncreaseBy(value int) ProgressIndicator
 }
 
 // p, _ := pterm.DefaultProgressbar.WithTotal(len(fakeInstallList)).WithTitle("Downloading stuff").Start()
@@ -87,6 +88,10 @@ func (i *ProgressIndicatorPTerm) Stop() ProgressIndicator {
 }
 
 func (i *ProgressIndicatorPTerm) Increase() ProgressIndicator {
+	return i
+}
+
+func (i *ProgressIndicatorPTerm) IncreaseBy(value int) ProgressIndicator {
 	return i
 }
 
