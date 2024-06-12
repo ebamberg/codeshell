@@ -136,6 +136,7 @@ func execute(prompt string) error {
 
 		out, err := cmd.CombinedOutput()
 		if err != nil {
+			output.Println(string(out))
 			return err
 		} else {
 			output.Println(string(out))
