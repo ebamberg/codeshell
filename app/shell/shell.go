@@ -1,11 +1,13 @@
 package shell
 
 import (
+	"bufio"
 	"codeshell/config"
 	"codeshell/output"
 	"codeshell/profiles"
 	"codeshell/style"
 	"codeshell/vfs"
+	"io"
 	"os"
 	"os/exec"
 	"slices"
@@ -34,9 +36,10 @@ func Run(rootCmd *cobra.Command) {
 		}
 		// Print a blank line for better readability
 		output.Println("")
-		execute(result)
-		// Print the user's answer with an info prefix
-		//	pterm.Info.Printfln(": %s", result)
+		err := execute(result)
+		if err != nil {
+			output.Errorln(err)
+		}
 	}
 }
 
@@ -60,7 +63,7 @@ func printWelcomeMessage() {
 
 	clear()
 
-	pterm.DefaultHeader.WithBackgroundStyle(pterm.NewStyle(pterm.BgLightBlue)).WithFullWidth().Println(config.GetString("terminal.style.title"))
+	pterm.DefaultHeader.WithBackgroundStyle(pterm.NewStyle(pterm.BgLightRed)).WithFullWidth().Println(config.GetString("terminal.style.title"))
 	pterm.Println()
 }
 
@@ -68,19 +71,46 @@ func clear() {
 	print("\033[H\033[2J")
 }
 
-func execute(prompt string) {
+func ExecuteScript(path string) {
+	reader, err := vfs.DefaultFilesystem.Read(path)
+	if err == nil {
+		defer reader.Close()
+		ExecuteBatch(reader)
+	} else {
+		output.Errorln(err)
+	}
+
+}
+
+func ExecuteBatch(reader io.Reader) error {
+	fileScanner := bufio.NewScanner(reader)
+
+	fileScanner.Split(bufio.ScanLines)
+
+	for fileScanner.Scan() {
+		line := fileScanner.Text()
+		err := execute(line)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func execute(prompt string) error {
 	cmdArgs := strings.Split(prompt, " ")
 	if cmdArgs[0] == "help" {
 		output.Infoln(cobraRootCmd.UsageString())
 	} else if isInternalCommand(cmdArgs) {
 		cobraRootCmd.SetArgs(cmdArgs)
+		defer resetSubCommandFlagValues(cobraRootCmd)
 		//	inbuf := bytes.NewBufferString("")
 		//	errbuf := bytes.NewBufferString("")
 		//	cobraRootCmd.SetOut(inbuf)
 		//	cobraRootCmd.SetErr(errbuf)s
 		err := cobraRootCmd.Execute()
 		if err != nil {
-			output.Errorln(err)
+			return err
 			//		} else {
 			//			sIn, e1 := io.ReadAll(inbuf)
 			//			sErr, e2 := io.ReadAll(errbuf)
@@ -98,7 +128,6 @@ func execute(prompt string) {
 			//			}
 
 		}
-		resetSubCommandFlagValues(cobraRootCmd)
 		output.Println("")
 	} else {
 		exe := cmdArgs[0]
@@ -107,11 +136,12 @@ func execute(prompt string) {
 
 		out, err := cmd.CombinedOutput()
 		if err != nil {
-			output.Errorln(err)
+			return err
 		} else {
 			output.Println(string(out))
 		}
 	}
+	return nil
 }
 
 func isInternalCommand(args []string) bool {
