@@ -4,6 +4,7 @@ Copyright © 2024 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"codeshell/output"
 	"codeshell/shell"
 
 	"github.com/spf13/cobra"
@@ -21,7 +22,10 @@ var executeCmd = &cobra.Command{
 
 	Run: func(cmd *cobra.Command, args []string) {
 		scriptname := args[0]
-		shell.ExecuteScript(scriptname)
+		err := shell.ExecuteScript(scriptname)
+		if err != nil {
+			output.Errorln(err)
+		}
 	},
 }
 

@@ -71,13 +71,13 @@ func clear() {
 	print("\033[H\033[2J")
 }
 
-func ExecuteScript(path string) {
+func ExecuteScript(path string) error {
 	reader, err := vfs.DefaultFilesystem.Read(path)
 	if err == nil {
 		defer reader.Close()
-		ExecuteBatch(reader)
+		return ExecuteBatch(reader)
 	} else {
-		output.Errorln(err)
+		return err
 	}
 
 }
