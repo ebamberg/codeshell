@@ -36,7 +36,7 @@ func Run(rootCmd *cobra.Command) {
 		}
 		// Print a blank line for better readability
 		output.Println("")
-		err := execute(result)
+		err := Execute(result)
 		if err != nil {
 			output.Errorln(err)
 		}
@@ -89,7 +89,7 @@ func ExecuteBatch(reader io.Reader) error {
 
 	for fileScanner.Scan() {
 		line := fileScanner.Text()
-		err := execute(line)
+		err := Execute(line)
 		if err != nil {
 			return err
 		}
@@ -97,7 +97,7 @@ func ExecuteBatch(reader io.Reader) error {
 	return nil
 }
 
-func execute(prompt string) error {
+func Execute(prompt string) error {
 	cmdArgs := strings.Split(prompt, " ")
 	if cmdArgs[0] == "help" {
 		output.Infoln(cobraRootCmd.UsageString())

@@ -38,11 +38,17 @@ type ApplicationProvider interface {
 	List() []Application
 }
 
+type appSourceArchiveInfo struct {
+	rootfolder     string
+	extractcommand string
+}
+
 type appInstallationSource struct {
 	Url              string
 	Size             int
-	IgnoreRootFolder bool              `mapstructure:"IgnoreRootFolder"`
-	EnvVars          map[string]string `mapstructure:"envVars"`
+	IgnoreRootFolder bool                 `mapstructure:"IgnoreRootFolder"`
+	archive          appSourceArchiveInfo `mapstructure:"archive"`
+	EnvVars          map[string]string    `mapstructure:"envVars"`
 }
 
 type Application struct {

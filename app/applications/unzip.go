@@ -2,6 +2,7 @@ package applications
 
 import (
 	"archive/zip"
+	"codeshell/shell"
 	"fmt"
 	"io"
 	"os"
@@ -9,7 +10,12 @@ import (
 	"strings"
 )
 
-func unzipSource(source, destination string, ignoreRootFolder bool) error {
+func unzipSource(source, destination string, ignoreRootFolder bool, archive appSourceArchiveInfo) error {
+
+	if archive.extractcommand != "" {
+		return unzipWithCommand(source, destination, archive.extractcommand)
+	}
+
 	// 1. Open the zip file
 	reader, err := zip.OpenReader(source)
 	if err != nil {
@@ -31,6 +37,11 @@ func unzipSource(source, destination string, ignoreRootFolder bool) error {
 				f.Name = strings.Join(pathElements[1:], "/")
 			} else {
 				f.Name = ""
+			}
+		}
+		if archive.rootfolder != "" {
+			if strings.HasPrefix(f.Name, archive.rootfolder) {
+				f.Name = strings.Replace(f.Name, archive.rootfolder, "", 1)
 			}
 		}
 		if f.Name != "" {
@@ -81,4 +92,11 @@ func unzipFile(f *zip.File, destination string) error {
 		return err
 	}
 	return nil
+}
+
+func unzipWithCommand(source string, destination string, extractcommand string) error {
+	cmd := strings.ReplaceAll(extractcommand, "${source}", source)
+	cmd = strings.ReplaceAll(cmd, "${targetfolder}", destination)
+
+	return shell.Execute(cmd)
 }

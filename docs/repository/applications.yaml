@@ -66,7 +66,8 @@ python:
             # url:  "https://www.python.org/ftp/python/3.12.3/python-3.12.3-embed-amd64.zip"
             url: "https://github.com/winpython/winpython/releases/download/7.5.20240410final/Winpython64-3.12.3.0.exe"
             archive:
-              roottolder:  "WPy64-31230/python-3.12.3.amd64/"
+              rootfolder:  "tools"
+              extractcommand: "${source} /S /D ${targetfolder}"
             envvars:
               python_home: '{{.Path}}'
     - id: python

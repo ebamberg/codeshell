@@ -64,7 +64,7 @@ func Install(newApp Application) error {
 				_, err = vfs.Copy(out, resp.Body)
 				//unzip file
 				if err == nil {
-					err = unzipSource(downloadFilePath, appPath, newApp.Source.IgnoreRootFolder)
+					err = unzipSource(downloadFilePath, appPath, newApp.Source.IgnoreRootFolder, newApp.Source.archive)
 					if err == nil {
 						localApps := localAppProvider.GetMapIndex()
 
@@ -83,9 +83,17 @@ func Install(newApp Application) error {
 						localApps[installedApp.Id] = append(localApps[installedApp.Id], installedApp)
 						config.Set(config.CONFIG_KEY_APPLICATIONS_INSTALLED, localApps)
 
+					} else {
+						return err
 					}
+				} else {
+					return err
 				}
+			} else {
+				return err
 			}
+		} else {
+			return err
 		}
 	}
 	return err
