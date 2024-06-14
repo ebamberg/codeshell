@@ -18,6 +18,7 @@ func ActivateVirtualEnvironment(path string) {
 	OLD_VIRTUAL_ENV = utils.GetEnvVariable("VIRTUAL_ENV")
 	utils.SetEnvVariable("VIRTUAL_ENV", path)
 	utils.AppendEnvPath(filepath.Join(path, "Scripts"))
+	output.Infoln("virtual environment activated")
 }
 
 func DeactivateVirtualEnvironment() {
@@ -26,7 +27,7 @@ func DeactivateVirtualEnvironment() {
 	utils.RemoveEnvPath(filepath.Join(path, "Scripts"))
 }
 
-func init() {
+func RegisterListener() {
 	events.RegisterListener(func(e events.ApplicationEvent) {
 		if e.Eventtype == events.FS_WORKDIR_CHANGED {
 			if profiles.CurrentProfile != nil && profiles.CurrentProfile.CheckVirtualEnv == true {

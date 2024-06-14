@@ -18,6 +18,7 @@ package cmd
 import (
 	"codeshell/config"
 	"codeshell/profiles"
+	"codeshell/support/python"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -68,6 +69,7 @@ func init() {
 
 	launchProfile = rootCmd.Flags().String("profile", "default", "profile to activate on startup")
 	initConfig()
+	python.RegisterListener()
 }
 
 func onStartup() {
