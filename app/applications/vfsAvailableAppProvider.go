@@ -8,12 +8,12 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-type HttpAvailableApplicationProvider struct {
+type VFSAvailableApplicationProvider struct {
 	repo vfs.VFS
 }
 
 // https://ebamberg.github.io/codeshell/repository/applications.yaml
-func (this *HttpAvailableApplicationProvider) GetMapIndex() map[string][]Application {
+func (this *VFSAvailableApplicationProvider) GetMapIndex() map[string][]Application {
 	apps := make(map[string][]Application, 0)
 	//	file, err := ioutil.ReadFile("C:\\dev\\src\\codeshell\\docs\\repository\\applications.yaml")
 	file, err := this.repo.Read("applications.yaml")
@@ -33,6 +33,6 @@ func (this *HttpAvailableApplicationProvider) GetMapIndex() map[string][]Applica
 	return apps
 }
 
-func (this *HttpAvailableApplicationProvider) List() []Application {
+func (this *VFSAvailableApplicationProvider) List() []Application {
 	return FlattenMap(this.GetMapIndex())
 }

@@ -30,7 +30,7 @@ func initProviders() {
 	if repo_url != "" {
 		repo_fs, err := vfs.FromUrlString(repo_url)
 		if err == nil {
-			availableProvider = &HttpAvailableApplicationProvider{repo: repo_fs}
+			availableProvider = &VFSAvailableApplicationProvider{repo: repo_fs}
 
 		} else {
 			panic(err)
