@@ -78,7 +78,7 @@ func Install(newApp Application) error {
 						localApps := localAppProvider.GetMapIndex()
 
 						if newApp.Source.Archive.AppPath != "" {
-							appPath = strings.ReplaceAll(newApp.Source.Archive.AppPath, "${targetfolder}", "appPath")
+							appPath = strings.ReplaceAll(newApp.Source.Archive.AppPath, "${targetfolder}", appPath)
 						}
 						installedApp := newApp // copy our struct
 						installedApp.Path = appPath
