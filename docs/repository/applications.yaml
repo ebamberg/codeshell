@@ -63,13 +63,11 @@ python:
       version: "3.12"
       source: 
             size: 0
-            # url:  "https://www.python.org/ftp/python/3.12.3/python-3.12.3-embed-amd64.zip"
             url: "https://github.com/winpython/winpython/releases/download/7.5.20240410final/Winpython64-3.12.3.0.exe"
             archive:
-              rootfolder:  "tools"
               downloadas:  "WinPython.exe"
               extractcommand: "${source} -y -o${targetfolder}"
-              apppath: "${targetfolder}/WPy64-31230/python-3.12.3.amd64"
+              apppath: "${targetfolder}\WPy64-31230\python-3.12.3.amd64"
             envvars:
               python_home: '{{.Path}}'
     - id: python
