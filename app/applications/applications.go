@@ -39,6 +39,7 @@ type ApplicationProvider interface {
 }
 
 type appSourceArchiveInfo struct {
+	downloadAs     string
 	rootfolder     string
 	extractcommand string
 }
@@ -47,7 +48,7 @@ type appInstallationSource struct {
 	Url              string
 	Size             int
 	IgnoreRootFolder bool                 `mapstructure:"IgnoreRootFolder"`
-	archive          appSourceArchiveInfo `mapstructure:"archive"`
+	Archive          appSourceArchiveInfo `mapstructure:"archive"`
 	EnvVars          map[string]string    `mapstructure:"envVars"`
 }
 

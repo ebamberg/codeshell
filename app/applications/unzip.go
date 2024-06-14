@@ -2,10 +2,11 @@ package applications
 
 import (
 	"archive/zip"
-	"codeshell/shell"
+	"codeshell/output"
 	"fmt"
 	"io"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 )
@@ -95,8 +96,18 @@ func unzipFile(f *zip.File, destination string) error {
 }
 
 func unzipWithCommand(source string, destination string, extractcommand string) error {
-	cmd := strings.ReplaceAll(extractcommand, "${source}", source)
-	cmd = strings.ReplaceAll(cmd, "${targetfolder}", destination)
+	prompt := strings.ReplaceAll(extractcommand, "${source}", source)
+	prompt = strings.ReplaceAll(prompt, "${targetfolder}", destination)
+	cmdArgs := strings.Split(prompt, " ")
+	exe := cmdArgs[0]
+	args := cmdArgs[1:]
+	cmd := exec.Command(exe, args...)
 
-	return shell.Execute(cmd)
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		output.Println(string(out))
+		return err
+	} else {
+		output.Println(string(out))
+	}
 }

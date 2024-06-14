@@ -47,7 +47,13 @@ func Install(newApp Application) error {
 			}
 		}()
 		// f, err := ioutil.TempFile("", "prefix")
-		downloadFilePath := filepath.Join(appPath, "~download.zip")
+		var downloadFilePath string
+		if newApp.Source.Archive.downloadAs == "" {
+			downloadFilePath = filepath.Join(appPath, "~download.zip")
+		} else {
+			downloadFilePath = filepath.Join(appPath, newApp.Source.Archive.downloadAs)
+		}
+
 		out, err := os.Create(downloadFilePath)
 		if err == nil {
 			defer os.Remove(downloadFilePath)
@@ -64,7 +70,7 @@ func Install(newApp Application) error {
 				_, err = vfs.Copy(out, resp.Body)
 				//unzip file
 				if err == nil {
-					err = unzipSource(downloadFilePath, appPath, newApp.Source.IgnoreRootFolder, newApp.Source.archive)
+					err = unzipSource(downloadFilePath, appPath, newApp.Source.IgnoreRootFolder, newApp.Source.Archive)
 					if err == nil {
 						localApps := localAppProvider.GetMapIndex()
 
