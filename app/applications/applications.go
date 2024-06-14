@@ -39,9 +39,9 @@ type ApplicationProvider interface {
 }
 
 type appSourceArchiveInfo struct {
-	downloadAs     string
-	rootfolder     string
-	extractcommand string
+	DownloadAs     string
+	Rootfolder     string
+	Extractcommand string
 }
 
 type appInstallationSource struct {

@@ -13,8 +13,8 @@ import (
 
 func unzipSource(source, destination string, ignoreRootFolder bool, archive appSourceArchiveInfo) error {
 
-	if archive.extractcommand != "" {
-		return unzipWithCommand(source, destination, archive.extractcommand)
+	if archive.Extractcommand != "" {
+		return unzipWithCommand(source, destination, archive.Extractcommand)
 	}
 
 	// 1. Open the zip file
@@ -40,9 +40,9 @@ func unzipSource(source, destination string, ignoreRootFolder bool, archive appS
 				f.Name = ""
 			}
 		}
-		if archive.rootfolder != "" {
-			if strings.HasPrefix(f.Name, archive.rootfolder) {
-				f.Name = strings.Replace(f.Name, archive.rootfolder, "", 1)
+		if archive.Rootfolder != "" {
+			if strings.HasPrefix(f.Name, archive.Rootfolder) {
+				f.Name = strings.Replace(f.Name, archive.Rootfolder, "", 1)
 			}
 		}
 		if f.Name != "" {

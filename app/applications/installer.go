@@ -48,10 +48,10 @@ func Install(newApp Application) error {
 		}()
 		// f, err := ioutil.TempFile("", "prefix")
 		var downloadFilePath string
-		if newApp.Source.Archive.downloadAs == "" {
+		if newApp.Source.Archive.DownloadAs == "" {
 			downloadFilePath = filepath.Join(appPath, "~download.zip")
 		} else {
-			downloadFilePath = filepath.Join(appPath, newApp.Source.Archive.downloadAs)
+			downloadFilePath = filepath.Join(appPath, newApp.Source.Archive.DownloadAs)
 		}
 
 		out, err := os.Create(downloadFilePath)
