@@ -110,4 +110,5 @@ func unzipWithCommand(source string, destination string, extractcommand string) 
 	} else {
 		output.Println(string(out))
 	}
+	return nil
 }
