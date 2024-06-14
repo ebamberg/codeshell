@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 func appPath(app Application) string {
@@ -56,7 +57,7 @@ func Install(newApp Application) error {
 
 		out, err := os.Create(downloadFilePath)
 		if err == nil {
-			defer os.Remove(downloadFilePath)
+			//	defer os.Remove(downloadFilePath)
 			defer out.Close()
 
 			resp, err := http.Get(newApp.Source.Url)
@@ -68,12 +69,17 @@ func Install(newApp Application) error {
 					contentLength = int(contentLength)
 				}
 				_, err = vfs.Copy(out, resp.Body)
+				out.Close()
 				//unzip file
 				if err == nil {
 					err = unzipSource(downloadFilePath, appPath, newApp.Source.IgnoreRootFolder, newApp.Source.Archive)
+					os.Remove(downloadFilePath)
 					if err == nil {
 						localApps := localAppProvider.GetMapIndex()
 
+						if newApp.Source.Archive.AppPath != "" {
+							appPath = strings.ReplaceAll(newApp.Source.Archive.AppPath, "${targetfolder}", "appPath")
+						}
 						installedApp := newApp // copy our struct
 						installedApp.Path = appPath
 						installedApp.BinaryPath = findBinaryPath(appPath)
@@ -93,12 +99,15 @@ func Install(newApp Application) error {
 						return err
 					}
 				} else {
+					os.Remove(downloadFilePath)
 					return err
 				}
 			} else {
+				os.Remove(downloadFilePath)
 				return err
 			}
 		} else {
+			os.Remove(downloadFilePath)
 			return err
 		}
 	}

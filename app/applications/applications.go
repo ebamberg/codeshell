@@ -42,6 +42,7 @@ type appSourceArchiveInfo struct {
 	DownloadAs     string
 	Rootfolder     string
 	Extractcommand string
+	AppPath        string
 }
 
 type appInstallationSource struct {

@@ -68,7 +68,8 @@ python:
             archive:
               rootfolder:  "tools"
               downloadas:  "WinPython.exe"
-              extractcommand: "${source} /S /D ${targetfolder}"
+              extractcommand: "${source} -y -o${targetfolder}"
+              AppPath: "${targetfolder}/WPy64-31230/python-3.12.3.amd64"
             envvars:
               python_home: '{{.Path}}'
     - id: python
