@@ -67,7 +67,7 @@ python:
             url: "https://github.com/winpython/winpython/releases/download/7.5.20240410final/Winpython64-3.12.3.0.exe"
             archive:
               rootfolder:  "tools"
-              DownloadAs:  "WinPython.exe"
+              downloadas:  "WinPython.exe"
               extractcommand: "${source} /S /D ${targetfolder}"
             envvars:
               python_home: '{{.Path}}'
